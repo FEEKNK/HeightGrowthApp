@@ -105,13 +105,14 @@
                 <h3>น้ำหนักตามเกณฑ์ส่วนสูง</h3>
                 <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">เกณฑ์อ้างอิงจากกรมอนามัย (สำหรับเด็ก 2-7 ปี)</p>
                 <table class="criteria-table">
-                    <tr><th>ส่วนสูง (ซม.)</th><th>ชาย (กก.)</th><th>หญิง (กก.)</th></tr>
-                    <tr><td>100</td><td>14.0 - 17.5</td><td>13.5 - 17.5</td></tr>
-                    <tr><td>105</td><td>15.5 - 19.0</td><td>14.5 - 19.0</td></tr>
-                    <tr><td>110</td><td>16.5 - 21.0</td><td>16.0 - 20.5</td></tr>
-                    <tr><td>115</td><td>18.5 - 23.5</td><td>17.5 - 22.5</td></tr>
-                    <tr><td>120</td><td>20.0 - 25.5</td><td>19.0 - 25.0</td></tr>
-                    <tr><td>125</td><td>21.5 - 28.0</td><td>20.5 - 28.0</td></tr>
+                    <tr><th rowspan="2">ส่วนสูง (ซม.)</th><th colspan="2">ช่วงน้ำหนักที่ "สมส่วน" (กก.)</th></tr>
+                    <tr><th style="font-size: 0.85em;">ชาย</th><th style="font-size: 0.85em;">หญิง</th></tr>
+                    <tr><td>90</td><td>12.2 - 15.8</td><td>11.8 - 15.0</td></tr>
+                    <tr><td>100</td><td>15.0 - 19.5</td><td>14.2 - 18.8</td></tr>
+                    <tr><td>110</td><td>17.8 - 23.8</td><td>17.0 - 23.0</td></tr>
+                    <tr><td>120</td><td>20.5 - 28.2</td><td>20.5 - 28.0</td></tr>
+                    <tr><td>130</td><td>24.0 - 33.8</td><td>24.0 - 33.5</td></tr>
+                    <tr><td>140</td><td>28.2 - 40.5</td><td>28.5 - 40.5</td></tr>
                 </table>
                 <br>
                 
@@ -171,11 +172,13 @@
                 <br>
 
                 <h3>ทดสอบก้าวขึ้น-ลง 3 นาที (3 Min Step Test)</h3>
-                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">บันทึกค่า Baseline เทียบกับตนเอง: (นำ HR Rest ลบด้วย HR Recovery)</p>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">คำนวณจากการลดลงของ HR: (นำ HR Peak ลบด้วย HR Recovery 1 นาที)</p>
                 <table class="criteria-table">
-                    <tr><th>ผลการประเมิน</th><th>ความหมาย</th></tr>
-                    <tr><td>ฟื้นตัวได้ดี</td><td>HR หลังพัก 1 นาที ต่ำกว่าหรือเท่ากับ HR ก่อนทดสอบ</td></tr>
-                    <tr><td>อัตราเต้นหัวใจยังสูงกว่าก่อนพัก</td><td>HR หลังพัก 1 นาที สูงกว่า HR ก่อนทดสอบ</td></tr>
+                    <tr><th>ระดับ</th><th>เกณฑ์การแปลผล</th></tr>
+                    <tr><td>ดีมาก</td><td>HR ลดลง &ge; 30 bpm และ RPE &le; 6 (ไม่มีอาการ)</td></tr>
+                    <tr><td>ดี</td><td>HR ลดลง 20–29 bpm (ไม่มีอาการ)</td></tr>
+                    <tr><td>ปานกลาง</td><td>HR ลดลง 10–19 bpm หรือ RPE &gt; 7</td></tr>
+                    <tr><td>ต่ำ</td><td>HR ลดลง &lt; 10 bpm หรือมีอาการผิดปกติ (เช่น เวียนศีรษะ, SpO2 ต่ำ)</td></tr>
                 </table>
                 <br>
 
@@ -259,7 +262,9 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="kanit-font.js"></script>
     <script src="criteria.js"></script>
     <script src="app.js"></script>
 </body>

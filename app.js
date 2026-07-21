@@ -20,6 +20,7 @@ const testsGroup2 = [
 
 // App State
 let currentUser = null;
+let currentResults = [];
 
 // DOM Elements
 const screenOnboarding = document.getElementById('screen-onboarding');
@@ -167,22 +168,33 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
         const stepHrRest = document.getElementById('step-hr-rest');
         if (stepHrRest) {
             const hrRest = stepHrRest.value || '-';
-            const hrRec = document.getElementById('step-hr-recovery').value || '-';
+            const hrPeak = document.getElementById('step-hr-peak').value || '';
+            const hrRec = document.getElementById('step-hr-recovery').value || '';
             const bp = document.getElementById('step-bp').value || '-';
             const spo2 = document.getElementById('step-spo2').value || '-';
-            const rpe = document.getElementById('step-rpe').value || '-';
+            const rpeVal = document.getElementById('step-rpe').value;
+            const rpe = rpeVal !== '' ? parseFloat(rpeVal) : 0;
+            const hasSymptoms = document.getElementById('step-symptoms').checked;
             
-            let stepEval = 'บันทึกเป็น Baseline';
-            if (hrRest !== '-' && hrRec !== '-' && hrRest !== '' && hrRec !== '') {
-                const diff = parseInt(hrRest) - parseInt(hrRec);
-                if (diff >= 0) {
-                     stepEval = `ฟื้นตัวได้ดี (ลดลง ${diff} bpm)`;
+            let stepEval = 'ไม่ได้ประเมินผล';
+            let diffDisplay = '';
+            
+            if (hrPeak !== '' && hrRec !== '') {
+                const diff = parseInt(hrPeak) - parseInt(hrRec);
+                diffDisplay = ` (ลดลง ${diff} bpm)`;
+                
+                if (diff < 10 || hasSymptoms) {
+                    stepEval = 'ต่ำ';
+                } else if ((diff >= 10 && diff <= 19) || rpe > 7) {
+                    stepEval = 'ปานกลาง';
+                } else if (diff >= 30 && rpe <= 6) {
+                    stepEval = 'ดีมาก';
                 } else {
-                     stepEval = `อัตราเต้นหัวใจยังสูงกว่าก่อนพัก`;
+                    stepEval = 'ดี';
                 }
             }
             
-            const stepValueDisplay = `HR(Rest): ${hrRest}, HR(Rec): ${hrRec}<br>BP: ${bp}, SpO2: ${spo2}%, RPE: ${rpe}`;
+            const stepValueDisplay = `HR Rest: ${hrRest}, HR Peak: ${hrPeak || '-'}, HR Rec: ${hrRec || '-'}${diffDisplay}<br>BP: ${bp}, SpO2: ${spo2}%, RPE: ${rpeVal || '-'}${hasSymptoms ? ' <br><span style="color:var(--danger); font-weight:bold;">*มีอาการผิดปกติ</span>' : ''}`;
             
             results.push({
                 name: '3 Min Step Test',
@@ -277,6 +289,7 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
     
     // Save for PDF generation and show on screen
     currentReportDiv = reportDiv;
+    currentResults = results;
     summaryContainer.innerHTML = '';
     summaryContainer.appendChild(reportDiv.cloneNode(true));
     
@@ -288,22 +301,148 @@ btnBackToDashboard.addEventListener('click', () => {
 });
 
 btnDownloadPdf.addEventListener('click', () => {
-    if (!currentReportDiv) return;
 
-    // Use the already-visible report element in summaryContainer
-    const visibleReport = summaryContainer.querySelector('.pdf-report');
-    const target = visibleReport || summaryContainer;
+    if (currentResults.length === 0 || !currentUser) return;
+    
+    // Show loading state
+    const originalText = btnDownloadPdf.innerText;
+    btnDownloadPdf.innerText = 'กำลังสร้าง PDF...';
+    btnDownloadPdf.disabled = true;
 
-    const opt = {
-        margin:       [10, 10, 10, 10], // top, right, bottom, left in mm
-        filename:     `GrowthFit_Report_${currentUser.hn}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { avoid: 'tr' }
-    };
+    // Use setTimeout so the UI can update before heavy PDF work
+    setTimeout(() => {
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
 
-    html2pdf().set(opt).from(target).save();
+            // Add Kanit Font
+            if (window.kanitBase64) {
+                doc.addFileToVFS('Kanit-Regular.ttf', window.kanitBase64);
+                doc.addFont('Kanit-Regular.ttf', 'Kanit', 'normal');
+                doc.setFont('Kanit');
+            }
+
+            // Colors
+            const primaryColor = [67, 97, 238];
+            const darkColor = [58, 12, 163];
+
+            // Header
+            doc.setFontSize(18);
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.text('สรุปผลการประเมินสมรรถภาพทางกาย', 105, 20, { align: 'center' });
+            
+            doc.setFontSize(22);
+            doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+            doc.text('GrowthFit', 105, 30, { align: 'center' });
+
+            // Patient Info Table
+            const infoData = [
+                [`HN: ${currentUser.hn}`, `ชื่อ-นามสกุล: ${currentUser.name}`],
+                [`เพศ: ${currentUser.gender === 'male' ? 'ชาย' : 'หญิง'}`, `อายุ: ${currentUser.age} ปี (กลุ่ม ${currentUser.group})`],
+                [`น้ำหนัก: ${currentUser.weight} กก.`, `ส่วนสูง: ${currentUser.height} ซม.`],
+                [`BMI: ${currentUser.bmi}`, '']
+            ];
+
+            doc.autoTable({
+                startY: 40,
+                body: infoData,
+                theme: 'plain',
+                styles: {
+                    font: 'Kanit',
+                    fontSize: 12,
+                    textColor: [50, 50, 50],
+                    cellPadding: 2
+                },
+                columnStyles: {
+                    0: { cellWidth: 85 },
+                    1: { cellWidth: 85 }
+                }
+            });
+
+            // Results Table
+            let currentY = doc.lastAutoTable.finalY + 15;
+            
+            doc.setFontSize(14);
+            doc.setTextColor(30, 30, 30);
+            doc.text('ผลการทดสอบ', 14, currentY);
+            currentY += 5;
+
+            const tableBody = currentResults.map(r => {
+                const isFail = r.evaluation.includes('ควรพัฒนา') || r.evaluation.includes('ต่ำ') || r.evaluation.includes('อ้วน') || r.evaluation.includes('ผอม');
+                // Convert value to string before replacing HTML tags, handle empty correctly
+                const valStr = (r.value !== undefined && r.value !== null && r.value !== '') ? String(r.value) : '-';
+                const cleanValue = valStr.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '');
+                const displayUnit = r.unit && valStr !== '-' ? ` ${r.unit}` : '';
+                return [
+                    r.name,
+                    `${cleanValue}${displayUnit}`.trim(),
+                    r.evaluation,
+                    isFail // pass it as 4th element to use in didParseCell
+                ];
+            });
+
+            doc.autoTable({
+                startY: currentY,
+                head: [['รายการทดสอบ', 'ผลลัพธ์', 'การประเมิน']],
+                body: tableBody,
+                theme: 'grid',
+                styles: {
+                    font: 'Kanit',
+                    fontSize: 11,
+                    textColor: [40, 40, 40],
+                    cellPadding: 4,
+                    valign: 'middle'
+                },
+                headStyles: {
+                    fillColor: [240, 240, 240],
+                    textColor: [30, 30, 30],
+                    fontStyle: 'bold',
+                    lineColor: [200, 200, 200],
+                    lineWidth: 0.1
+                },
+                bodyStyles: {
+                    lineColor: [200, 200, 200],
+                    lineWidth: 0.1
+                },
+                didParseCell: function(data) {
+                    if (data.section === 'body' && data.column.index === 2) {
+                        const isFail = data.row.raw[3];
+                        if (isFail) {
+                            data.cell.styles.textColor = [230, 57, 70];
+                            data.cell.styles.fontStyle = 'bold';
+                        } else {
+                            data.cell.styles.textColor = [42, 157, 143];
+                            data.cell.styles.fontStyle = 'bold';
+                        }
+                    }
+                },
+                columns: [
+                    { header: 'รายการทดสอบ', dataKey: 0 },
+                    { header: 'ผลลัพธ์', dataKey: 1 },
+                    { header: 'การประเมิน', dataKey: 2 }
+                ]
+            });
+
+            // Footer
+            const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}`, 195, pageHeight - 15, { align: 'right' });
+
+            doc.save(`GrowthFit_Report_${currentUser.hn}.pdf`);
+        } catch (error) {
+            console.error('PDF Generation Error:', error);
+            alert('เกิดข้อผิดพลาดในการสร้าง PDF');
+        } finally {
+            btnDownloadPdf.innerText = originalText;
+            btnDownloadPdf.disabled = false;
+        }
+    }, 100);
+
 });
 
 btnViewCriteria.addEventListener('click', () => {
@@ -390,21 +529,30 @@ function setupDashboard() {
                         <input type="number" id="step-hr-rest" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
                     </div>
                     <div>
+                        <label style="font-size: 0.75rem; color: #555;">HR Peak (เสร็จทันที)</label>
+                        <input type="number" id="step-hr-peak" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.75rem; color: #555;">HR Recovery (พัก 1 นาที)</label>
+                        <input type="number" id="step-hr-recovery" style="width: 100%; padding: 8px; border: 1.5px solid var(--primary); border-radius: 4px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.75rem; color: #555;">RPE (0-10)</label>
+                        <input type="number" id="step-rpe" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+                    <div>
                         <label style="font-size: 0.75rem; color: #555;">SpO2 (%)</label>
                         <input type="number" id="step-spo2" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
                     </div>
                     <div>
                         <label style="font-size: 0.75rem; color: #555;">BP (mmHg)</label>
-                        <input type="text" id="step-bp" placeholder="เช่น 120/80" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-                    </div>
-                    <div>
-                        <label style="font-size: 0.75rem; color: #555;">RPE / Pain</label>
-                        <input type="text" id="step-rpe" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                        <input type="text" id="step-bp" placeholder="120/80" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
                     </div>
                 </div>
-                <div>
-                    <label style="font-size: 0.8rem; font-weight: bold; color: var(--primary);">HR Recovery 1 นาทีเต็ม (bpm)</label>
-                    <input type="number" id="step-hr-recovery" style="width: 100%; padding: 8px; border: 1.5px solid var(--primary); border-radius: 4px; margin-top: 5px; box-sizing: border-box;">
+                <div style="margin-top: 5px;">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.85rem; color: #d62828;">
+                        <input type="checkbox" id="step-symptoms" style="width: 16px; height: 16px;"> มีอาการผิดปกติ (เวียนศีรษะ, เจ็บหน้าอก, SpO2 ต่ำ, BP ผิดปกติ)
+                    </label>
                 </div>
             `;
         } else {
