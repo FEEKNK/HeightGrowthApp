@@ -18,11 +18,16 @@
         <!-- Screen 1: Onboarding -->
         <div id="screen-onboarding" class="screen active">
             <header class="app-header">
-                <h1>GrowthFit 🌟</h1>
+                <h1>GrowthFit</h1>
                 <p>ระบบคัดกรองเตรียมความพร้อมออกกำลังกาย</p>
+                <button id="btn-view-criteria" class="btn-primary" style="margin-top: 15px; padding: 10px; font-size: 1rem; background: var(--secondary); box-shadow: none;">ดูเกณฑ์มาตรฐาน</button>
             </header>
             
             <form id="onboarding-form" class="glass-card">
+                <div class="form-group">
+                    <label for="hn">HN (Hospital Number)</label>
+                    <input type="text" id="hn" placeholder="ระบุ HN" required>
+                </div>
                 <div class="form-group">
                     <label for="child-name">ชื่อ-นามสกุล</label>
                     <input type="text" id="child-name" placeholder="ชื่อน้องๆ" required>
@@ -31,15 +36,15 @@
                     <label>เพศ</label>
                     <div class="gender-selector">
                         <input type="radio" id="gender-male" name="gender" value="male" required>
-                        <label for="gender-male" class="gender-btn male-btn">👦 ชาย</label>
+                        <label for="gender-male" class="gender-btn male-btn">ชาย</label>
                         
                         <input type="radio" id="gender-female" name="gender" value="female" required>
-                        <label for="gender-female" class="gender-btn female-btn">👧 หญิง</label>
+                        <label for="gender-female" class="gender-btn female-btn">หญิง</label>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="birth-date">วันเกิด (เพื่อประมวลผลอายุอัตโนมัติ)</label>
-                    <input type="date" id="birth-date" required>
+                    <label for="age">อายุ (ปี)</label>
+                    <input type="number" id="age" min="4" max="14" placeholder="ระบุอายุ" required>
                 </div>
                 <div class="form-group row">
                     <div class="col">
@@ -51,14 +56,14 @@
                         <input type="number" id="height" step="0.1" required>
                     </div>
                 </div>
-                <button type="submit" class="btn-primary">เริ่มการทดสอบ 🚀</button>
+                <button type="submit" class="btn-primary">เริ่มการทดสอบ</button>
             </form>
         </div>
 
         <!-- Screen 2: Test Dashboard -->
         <div id="screen-dashboard" class="screen">
             <header class="app-header">
-                <button id="btn-back" class="btn-icon">🔙</button>
+                <button id="btn-back" class="btn-icon">ย้อนกลับ</button>
                 <h1 id="dashboard-title">รายการทดสอบ</h1>
                 <div class="profile-badge">
                     <span id="display-name">ชื่อน้อง</span>
@@ -70,10 +75,192 @@
                 <!-- Test items will be injected here via JS -->
             </div>
             
-            <button id="btn-submit-tests" class="btn-primary mt-20">ประมวลผลลัพธ์ 📊</button>
+            <button id="btn-submit-tests" class="btn-primary mt-20">ประมวลผลลัพธ์</button>
+        </div>
+
+        <!-- Screen 3: Summary -->
+        <div id="screen-summary" class="screen">
+            <header class="app-header">
+                <button id="btn-back-to-dashboard" class="btn-icon">ย้อนกลับ</button>
+                <h1>สรุปผลการประเมิน</h1>
+            </header>
+            
+            <div id="summary-container" class="glass-card" style="padding: 20px; overflow-x: auto;">
+                <!-- Summary table will be injected here via JS -->
+            </div>
+            
+            <button id="btn-download-pdf" class="btn-primary mt-20" style="background: linear-gradient(135deg, #2a9d8f 0%, #21867a 100%);">ดาวน์โหลด PDF</button>
+        </div>
+
+        <!-- Screen 4: Criteria -->
+        <div id="screen-criteria" class="screen">
+            <header class="app-header" style="position: relative; padding-top: 10px;">
+                <button id="btn-back-from-criteria" class="btn-icon">ย้อนกลับ</button>
+                <h1 style="font-size: 1.8rem;">เกณฑ์มาตรฐาน</h1>
+            </header>
+            
+            <div class="glass-card" style="padding: 20px; overflow-y: auto; max-height: 70vh;">
+                <h2 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 15px;">กลุ่มที่ 1 (อายุ 4-7 ปี)</h2>
+                
+                <h3>น้ำหนักตามเกณฑ์ส่วนสูง</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">เกณฑ์อ้างอิงจากกรมอนามัย (สำหรับเด็ก 2-7 ปี)</p>
+                <table class="criteria-table">
+                    <tr><th>ส่วนสูง (ซม.)</th><th>ชาย (กก.)</th><th>หญิง (กก.)</th></tr>
+                    <tr><td>100</td><td>14.0 - 17.5</td><td>13.5 - 17.5</td></tr>
+                    <tr><td>105</td><td>15.5 - 19.0</td><td>14.5 - 19.0</td></tr>
+                    <tr><td>110</td><td>16.5 - 21.0</td><td>16.0 - 20.5</td></tr>
+                    <tr><td>115</td><td>18.5 - 23.5</td><td>17.5 - 22.5</td></tr>
+                    <tr><td>120</td><td>20.0 - 25.5</td><td>19.0 - 25.0</td></tr>
+                    <tr><td>125</td><td>21.5 - 28.0</td><td>20.5 - 28.0</td></tr>
+                </table>
+                <br>
+                
+                <h3>ยืนทรงตัวขาเดียว (Single Leg Stance)</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 5px;"><b>Trials:</b> 2 ครั้งต่อข้าง | <b>Score:</b> เวลา balance</p>
+                <table class="criteria-table">
+                    <tr>
+                        <th rowspan="2">อายุ (ปี)</th>
+                        <th colspan="2">ลืมตา (วินาที)</th>
+                        <th colspan="2">หลับตา (วินาที)</th>
+                    </tr>
+                    <tr>
+                        <th style="font-size: 0.85em;">ชาย</th>
+                        <th style="font-size: 0.85em;">หญิง</th>
+                        <th style="font-size: 0.85em;">ชาย</th>
+                        <th style="font-size: 0.85em;">หญิง</th>
+                    </tr>
+                    <tr><td>4 ปี</td><td>4 - 6</td><td>4 - 7</td><td>1 - 2</td><td>1 - 2</td></tr>
+                    <tr><td>5 ปี</td><td>8 - 10</td><td>9 - 12</td><td>1 - 3</td><td>2 - 3</td></tr>
+                    <tr><td>6 ปี</td><td>12 - 15</td><td>14 - 18</td><td>2 - 4</td><td>3 - 5</td></tr>
+                    <tr><td>7 ปี</td><td>18 - 25</td><td>20 - 28</td><td>4 - 7</td><td>5 - 8</td></tr>
+                </table>
+                <br>
+
+                <h3>กระโดดขาเดียว (Single-leg Hop)</h3>
+                <table class="criteria-table">
+                    <tr><th>อายุ (ปี)</th><th>เกณฑ์พัฒนาการ (จำนวนครั้ง)</th></tr>
+                    <tr><td>4 ปี</td><td>2–5 ครั้งบนขาเดียว</td></tr>
+                    <tr><td>5 ปี</td><td>8–10 ครั้ง</td></tr>
+                    <tr><td>6 ปี</td><td>ต่อเนื่องสม่ำเสมอ + มีระยะ</td></tr>
+                    <tr><td>7 ปี</td><td>คล่อง 10+ ครั้ง + ระยะดี</td></tr>
+                </table>
+                <br>
+
+                <h3>กระโดดไกลอยู่กับที่ (Standing Long Jump)</h3>
+                <table class="criteria-table">
+                    <tr><th>อายุ (ปี)</th><th>เกณฑ์มาตรฐาน (ซม.)</th></tr>
+                    <tr><td>4 ปี</td><td>≈ 60 - 75</td></tr>
+                    <tr><td>5 ปี</td><td>≈ 75 - 90</td></tr>
+                    <tr><td>6 ปี</td><td>≈ 90 - 105</td></tr>
+                    <tr><td>7 ปี</td><td>≈ 105 - 120</td></tr>
+                </table>
+                <br>
+                
+                <!-- Group 2 -->
+                <h2 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 15px; margin-top: 30px;">กลุ่มที่ 2 (อายุ 8-14 ปี)</h2>
+                
+                <h3>BMI (ดัชนีมวลกาย)</h3>
+                <table class="criteria-table">
+                    <tr><th>ระดับ</th><th>ความหมาย</th></tr>
+                    <tr><td>ต่ำกว่าเกณฑ์มาก</td><td>ผอมมาก</td></tr>
+                    <tr><td>ต่ำกว่าเกณฑ์</td><td>ผอม</td></tr>
+                    <tr><td>ตามเกณฑ์</td><td>สมส่วน</td></tr>
+                    <tr><td>สูงกว่าเกณฑ์</td><td>ท้วม</td></tr>
+                    <tr><td>สูงกว่าเกณฑ์มาก</td><td>อ้วน</td></tr>
+                </table>
+                <br>
+
+                <h3>ทดสอบก้าวขึ้น-ลง 3 นาที (3 Min Step Test)</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">บันทึกค่า Baseline เทียบกับตนเอง: (นำ HR Rest ลบด้วย HR Recovery)</p>
+                <table class="criteria-table">
+                    <tr><th>ผลการประเมิน</th><th>ความหมาย</th></tr>
+                    <tr><td>ฟื้นตัวได้ดี</td><td>HR หลังพัก 1 นาที ต่ำกว่าหรือเท่ากับ HR ก่อนทดสอบ</td></tr>
+                    <tr><td>อัตราเต้นหัวใจยังสูงกว่าก่อนพัก</td><td>HR หลังพัก 1 นาที สูงกว่า HR ก่อนทดสอบ</td></tr>
+                </table>
+                <br>
+
+                <h3>วิ่งแคล่วคล่องว่องไว 10x5 เมตร (10x5m Shuttle Run)</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">*ค่าน้อย = ดี</p>
+                <table class="criteria-table">
+                    <tr><th>อายุ (ปี)</th><th>ชาย (วินาที)</th><th>หญิง (วินาที)</th></tr>
+                    <tr><td>8-9 ปี</td><td>19.0 - 22.0</td><td>20.0 - 23.5</td></tr>
+                    <tr><td>10-11 ปี</td><td>17.5 - 19.5</td><td>18.5 - 20.5</td></tr>
+                    <tr><td>12-13 ปี</td><td>16.0 - 18.0</td><td>17.5 - 19.5</td></tr>
+                    <tr><td>14-15 ปี</td><td>14.5 - 16.5</td><td>16.5 - 18.5</td></tr>
+                </table>
+                <br>
+
+                <h3>กระโดดไกลอยู่กับที่ (Standing Long Jump)</h3>
+                <table class="criteria-table">
+                    <tr><th>อายุ (ปี)</th><th>ชาย (ซม.)</th><th>หญิง (ซม.)</th></tr>
+                    <tr><td>8-9 ปี</td><td>≈ 125</td><td>≈ 120</td></tr>
+                    <tr><td>10-11 ปี</td><td>≈ 140</td><td>≈ 132</td></tr>
+                    <tr><td>12-13 ปี</td><td>≈ 158</td><td>≈ 150</td></tr>
+                    <tr><td>14 ปี</td><td>≈ 185</td><td>≈ 160</td></tr>
+                </table>
+                <br>
+
+                <h3>แรงบีบมือ (Hand Grip Strength)</h3>
+                <table class="criteria-table">
+                    <tr><th>อายุ (ปี)</th><th>ชาย (กก.)</th><th>หญิง (กก.)</th></tr>
+                    <tr><td>8-9 ปี</td><td>11.0 - 17.5</td><td>10.0 - 16.5</td></tr>
+                    <tr><td>10-11 ปี</td><td>15.5 - 22.5</td><td>14.5 - 21.5</td></tr>
+                    <tr><td>12-13 ปี</td><td>19.5 - 31.0</td><td>17.5 - 24.5</td></tr>
+                    <tr><td>14-15 ปี</td><td>28.5 - 44.0</td><td>20.0 - 27.5</td></tr>
+                </table>
+                <br>
+                
+                <h3>ยืนทรงตัวขาเดียว (Single Leg Stance)</h3>
+                <table class="criteria-table">
+                    <tr>
+                        <th rowspan="2">อายุ (ปี)</th>
+                        <th colspan="2">ลืมตา (วินาที)</th>
+                        <th colspan="2">หลับตา (วินาที)</th>
+                    </tr>
+                    <tr>
+                        <th style="font-size: 0.85em;">ชาย</th>
+                        <th style="font-size: 0.85em;">หญิง</th>
+                        <th style="font-size: 0.85em;">ชาย</th>
+                        <th style="font-size: 0.85em;">หญิง</th>
+                    </tr>
+                    <tr><td>8 ปี</td><td>25 - 30</td><td>28 - 33</td><td>6 - 10</td><td>7 - 11</td></tr>
+                    <tr><td>9 ปี</td><td>32 - 40</td><td>35 - 45</td><td>9 - 13</td><td>10 - 14</td></tr>
+                    <tr><td>10-11 ปี</td><td>50 - 60+</td><td>60+</td><td>10 - 15</td><td>12 - 18</td></tr>
+                    <tr><td>12-13 ปี</td><td>60+</td><td>60+</td><td>14 - 20</td><td>15 - 22</td></tr>
+                    <tr><td>14-15 ปี</td><td>60+</td><td>60+</td><td>20 - 25</td><td>20 - 25</td></tr>
+                </table>
+                <br>
+
+                <h3>นั่งงอตัวไปข้างหน้า (Sit & Reach) - หน่วยเป็น ซม.</h3>
+                <p style="font-size: 0.95rem; font-weight: bold; color: var(--primary); margin-top: 15px; margin-bottom: 5px;">ชาย</p>
+                <table class="criteria-table">
+                    <tr><th>อายุ (ปี)</th><th>ต่ำมาก</th><th>ต่ำ</th><th>ปานกลาง</th><th>ดี</th><th>ดีมาก</th></tr>
+                    <tr><td>8</td><td>1 ลงมา</td><td>2 - 4</td><td>5 - 7</td><td>8 - 10</td><td>11 ขึ้นไป</td></tr>
+                    <tr><td>9</td><td>1 ลงมา</td><td>2 - 5</td><td>6 - 8</td><td>9 - 11</td><td>12 ขึ้นไป</td></tr>
+                    <tr><td>10</td><td>3 ลงมา</td><td>4 - 7</td><td>8 - 12</td><td>13 - 16</td><td>17 ขึ้นไป</td></tr>
+                    <tr><td>11</td><td>4 ลงมา</td><td>5 - 9</td><td>10 - 14</td><td>15 - 18</td><td>19 ขึ้นไป</td></tr>
+                    <tr><td>12</td><td>4 ลงมา</td><td>5 - 9</td><td>10 - 14</td><td>15 - 19</td><td>20 ขึ้นไป</td></tr>
+                    <tr><td>13</td><td>5 ลงมา</td><td>6 - 10</td><td>11 - 15</td><td>16 - 20</td><td>21 ขึ้นไป</td></tr>
+                    <tr><td>14</td><td>5 ลงมา</td><td>6 - 11</td><td>12 - 16</td><td>17 - 22</td><td>23 ขึ้นไป</td></tr>
+                </table>
+
+                <p style="font-size: 0.95rem; font-weight: bold; color: var(--primary); margin-top: 15px; margin-bottom: 5px;">หญิง</p>
+                <table class="criteria-table">
+                    <tr><th>อายุ (ปี)</th><th>ต่ำมาก</th><th>ต่ำ</th><th>ปานกลาง</th><th>ดี</th><th>ดีมาก</th></tr>
+                    <tr><td>8</td><td>1 ลงมา</td><td>2 - 4</td><td>5 - 8</td><td>9 - 12</td><td>13 ขึ้นไป</td></tr>
+                    <tr><td>9</td><td>1 ลงมา</td><td>2 - 5</td><td>6 - 9</td><td>10 - 14</td><td>15 ขึ้นไป</td></tr>
+                    <tr><td>10</td><td>4 ลงมา</td><td>5 - 9</td><td>10 - 14</td><td>15 - 18</td><td>19 ขึ้นไป</td></tr>
+                    <tr><td>11</td><td>4 ลงมา</td><td>5 - 10</td><td>11 - 15</td><td>16 - 20</td><td>21 ขึ้นไป</td></tr>
+                    <tr><td>12</td><td>5 ลงมา</td><td>6 - 10</td><td>11 - 15</td><td>16 - 20</td><td>21 ขึ้นไป</td></tr>
+                    <tr><td>13</td><td>5 ลงมา</td><td>6 - 11</td><td>12 - 16</td><td>17 - 22</td><td>23 ขึ้นไป</td></tr>
+                    <tr><td>14</td><td>7 ลงมา</td><td>8 - 13</td><td>14 - 18</td><td>19 - 23</td><td>24 ขึ้นไป</td></tr>
+                </table>
+            </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="criteria.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
