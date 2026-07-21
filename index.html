@@ -30,7 +30,7 @@
                 </div>
                 <div class="form-group">
                     <label for="child-name">ชื่อ-นามสกุล</label>
-                    <input type="text" id="child-name" placeholder="ชื่อน้องๆ" required>
+                    <input type="text" id="child-name" placeholder="ชื่อน้องๆ" pattern="^[a-zA-Zก-๙ ]+$" title="กรุณากรอกเฉพาะตัวอักษรเท่านั้น (ห้ามใช้ตัวเลขหรือสัญลักษณ์)" oninput="this.value = this.value.replace(/[^a-zA-Zก-๙ ]/g, '')" required>
                 </div>
                 <div class="form-group">
                     <label>เพศ</label>

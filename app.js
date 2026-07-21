@@ -210,44 +210,44 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
     // Create report template
     const reportDiv = document.createElement('div');
     reportDiv.className = 'pdf-report';
-    reportDiv.style.padding = '40px';
+    reportDiv.style.padding = '20px 30px';
     reportDiv.style.backgroundColor = '#fff';
     reportDiv.style.color = '#333';
     reportDiv.style.fontFamily = "'Kanit', sans-serif";
     
     let html = `
-        <h1 style="text-align: center; color: #4361ee; margin-bottom: 10px;">สรุปผลการประเมินสมรรถภาพทางกาย</h1>
-        <h2 style="text-align: center; color: #3a0ca3; margin-bottom: 40px;">GrowthFit</h2>
+        <h1 style="text-align: center; color: #4361ee; font-size: 24px; margin-bottom: 5px;">สรุปผลการประเมินสมรรถภาพทางกาย</h1>
+        <h2 style="text-align: center; color: #3a0ca3; font-size: 18px; margin-bottom: 20px;">GrowthFit</h2>
         
-        <div style="margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px;">
-            <h3 style="margin-bottom: 15px;">ข้อมูลเบื้องต้น</h3>
-            <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 1.1em;">
+        <div style="margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px;">
+            <h3 style="font-size: 16px; margin-bottom: 10px;">ข้อมูลเบื้องต้น</h3>
+            <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.95em;">
                 <tr>
-                    <td style="padding: 8px 0;"><strong>HN:</strong> ${currentUser.hn}</td>
-                    <td style="padding: 8px 0;"><strong>ชื่อ-นามสกุล:</strong> ${currentUser.name}</td>
+                    <td style="padding: 6px 0;"><strong>HN:</strong> ${currentUser.hn}</td>
+                    <td style="padding: 6px 0;"><strong>ชื่อ-นามสกุล:</strong> ${currentUser.name}</td>
                 </tr>
                 <tr>
-                    <td style="padding: 8px 0;"><strong>เพศ:</strong> ${currentUser.gender === 'male' ? 'ชาย' : 'หญิง'}</td>
-                    <td style="padding: 8px 0;"><strong>อายุ:</strong> ${currentUser.age} ปี (กลุ่ม ${currentUser.group})</td>
+                    <td style="padding: 6px 0;"><strong>เพศ:</strong> ${currentUser.gender === 'male' ? 'ชาย' : 'หญิง'}</td>
+                    <td style="padding: 6px 0;"><strong>อายุ:</strong> ${currentUser.age} ปี (กลุ่ม ${currentUser.group})</td>
                 </tr>
                 <tr>
-                    <td style="padding: 8px 0;"><strong>น้ำหนัก:</strong> ${currentUser.weight} กก.</td>
-                    <td style="padding: 8px 0;"><strong>ส่วนสูง:</strong> ${currentUser.height} ซม.</td>
+                    <td style="padding: 6px 0;"><strong>น้ำหนัก:</strong> ${currentUser.weight} กก.</td>
+                    <td style="padding: 6px 0;"><strong>ส่วนสูง:</strong> ${currentUser.height} ซม.</td>
                 </tr>
                 <tr>
-                    <td style="padding: 8px 0;" colspan="2"><strong>BMI:</strong> ${currentUser.bmi}</td>
+                    <td style="padding: 6px 0;" colspan="2"><strong>BMI:</strong> ${currentUser.bmi}</td>
                 </tr>
             </table>
         </div>
         
         <div>
-            <h3 style="margin-bottom: 15px;">ผลการทดสอบ</h3>
-            <table style="width: 100%; text-align: left; border-collapse: collapse; margin-top: 15px; font-size: 1.1em;">
+            <h3 style="font-size: 16px; margin-bottom: 10px;">ผลการทดสอบ</h3>
+            <table style="width: 100%; text-align: left; border-collapse: collapse; margin-top: 10px; font-size: 0.95em;">
                 <thead>
                     <tr style="background-color: #f8f9fa;">
-                        <th style="padding: 12px; border: 1px solid #ddd;">รายการทดสอบ</th>
-                        <th style="padding: 12px; border: 1px solid #ddd;">ผลลัพธ์</th>
-                        <th style="padding: 12px; border: 1px solid #ddd;">การประเมิน</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">รายการทดสอบ</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">ผลลัพธ์</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">การประเมิน</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -257,9 +257,9 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
         const evalColor = (r.evaluation.includes('ควรพัฒนา') || r.evaluation.includes('ต่ำ') || r.evaluation.includes('อ้วน') || r.evaluation.includes('ผอม')) ? '#e63946' : '#2a9d8f';
         html += `
                     <tr>
-                        <td style="padding: 12px; border: 1px solid #ddd;">${r.name}</td>
-                        <td style="padding: 12px; border: 1px solid #ddd;">${r.value || '-'} ${r.unit}</td>
-                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; color: ${evalColor};">${r.evaluation}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${r.name}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${r.value || '-'} ${r.unit}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: ${evalColor};">${r.evaluation}</td>
                     </tr>
         `;
     });
@@ -268,7 +268,7 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
                 </tbody>
             </table>
         </div>
-        <div style="margin-top: 50px; text-align: right; font-size: 0.9em; color: #666;">
+        <div style="margin-top: 30px; text-align: right; font-size: 0.8em; color: #666;">
             <p>พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}</p>
         </div>
     `;
@@ -289,16 +289,21 @@ btnBackToDashboard.addEventListener('click', () => {
 
 btnDownloadPdf.addEventListener('click', () => {
     if (!currentReportDiv) return;
-    
+
+    // Use the already-visible report element in summaryContainer
+    const visibleReport = summaryContainer.querySelector('.pdf-report');
+    const target = visibleReport || summaryContainer;
+
     const opt = {
-        margin:       0.5,
+        margin:       [10, 10, 10, 10], // top, right, bottom, left in mm
         filename:     `GrowthFit_Report_${currentUser.hn}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { avoid: 'tr' }
     };
 
-    html2pdf().set(opt).from(currentReportDiv).save();
+    html2pdf().set(opt).from(target).save();
 });
 
 btnViewCriteria.addEventListener('click', () => {
