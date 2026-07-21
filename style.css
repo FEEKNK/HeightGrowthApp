@@ -182,10 +182,17 @@ input:focus {
 .gender-selector {
     display: flex;
     gap: 15px;
+    position: relative;
 }
 
 .gender-selector input {
-    display: none;
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
 }
 
 .gender-btn {
