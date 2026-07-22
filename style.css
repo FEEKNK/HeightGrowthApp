@@ -449,19 +449,29 @@ input:focus {
 }
 
 .bdms-header-meta {
-    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 110px;
 }
 
 .bdms-pill-badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: #00A3E0;
     color: #ffffff;
     font-size: 0.72rem;
     font-weight: 600;
-    padding: 3px 12px;
+    padding: 4px 14px;
     border-radius: 16px;
     letter-spacing: 0.5px;
     box-shadow: 0 2px 6px rgba(0, 163, 224, 0.3);
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .bdms-doc-meta {

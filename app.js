@@ -284,7 +284,7 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
             const hrRecInput = document.getElementById('step-hr-recovery');
             const hrRec = hrRecInput ? hrRecInput.value : '';
             
-            let stepEval = 'ไม่ได้ประเมินผล';
+            let stepEval = '-';
             let stepValueDisplay = '-';
             
             if (hrPeak !== '' && hrRec !== '') {
