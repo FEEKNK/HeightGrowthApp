@@ -262,8 +262,9 @@ function evaluateStandingLongJump(age, gender, value) {
         else if (age <= 13) avg = gender === 'male' ? 158 : 150;
         else avg = gender === 'male' ? 185 : 160;
         
-        if (value >= avg) return 'ดี (สูงกว่าค่าเฉลี่ย)';
-        return 'ควรพัฒนา (ต่ำกว่าค่าเฉลี่ย)';
+        if (value < avg) return 'ต่ำกว่าค่าเฉลี่ย';
+        if (value === avg) return 'อยู่ในเกณฑ์ค่าเฉลี่ย';
+        return 'สูงกว่าค่าเฉลี่ย';
     } else if (age >= 4 && age <= 6) {
         // Group 1 → ผ่าน/ไม่ผ่าน
         let min;
