@@ -64,9 +64,9 @@ onboardingForm.addEventListener('submit', (e) => {
     const bmi = calculateBMI(weight, height);
     
     let group = 0;
-    if (age >= 4 && age <= 7) {
+    if (age >= 4 && age <= 6) {
         group = 1;
-    } else if (age >= 8 && age <= 14) {
+    } else if (age >= 7 && age <= 14) {
         group = 2;
     } else {
         alert('ระบบนี้ถูกออกแบบมาสำหรับเด็กอายุระหว่าง 4 - 14 ปี เท่านั้นครับ');
@@ -226,10 +226,10 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
                     if (r.checked) {
                         if (r.value === 'pass') {
                             hopVal = currentUser.age === 6 ? 'ต่อเนื่องและมีระยะ' : 'คล่อง 10+ ครั้งและมีระยะ';
-                            hopEval = 'ผ่านเกณฑ์';
+                            hopEval = 'ผ่าน';
                         } else {
                             hopVal = 'ไม่ผ่านตามเกณฑ์ท่าทาง';
-                            hopEval = 'ควรพัฒนา';
+                            hopEval = 'ไม่ผ่าน';
                         }
                         break;
                     }
@@ -495,11 +495,21 @@ function generateVectorPDF() {
                 doc.rect(cell.x + 0.2, cell.y + 0.2, cell.width - 0.4, cell.height - 0.4, 'F');
 
                 let fillColor = [2, 132, 199]; // default blue
-                if (text.includes('ดีมาก')) fillColor = [46, 125, 50];
+                // Group 1 pass/fail
+                if (text === 'ผ่าน') fillColor = [46, 125, 50]; // green
+                else if (text === 'ไม่ผ่าน') fillColor = [229, 57, 53]; // red
+                // Pink book weight-for-height categories
+                else if (text === 'สมส่วน') fillColor = [46, 125, 50]; // green
+                else if (text === 'ค่อนข้างผอม') fillColor = [245, 158, 11]; // amber
+                else if (text === 'ผอม') fillColor = [229, 57, 53]; // red
+                else if (text === 'ท้วม') fillColor = [245, 158, 11]; // amber
+                else if (text === 'อ้วน') fillColor = [229, 57, 53]; // red
+                // Group 2 descriptive
+                else if (text.includes('ดีมาก')) fillColor = [46, 125, 50];
                 else if (text.includes('ต่ำมาก')) fillColor = [229, 57, 53];
                 else if (text.includes('ปานกลาง')) fillColor = [255, 179, 0];
                 else if (text.includes('ต่ำ') || text.includes('ควรพัฒนา')) fillColor = [239, 68, 68];
-                else if (text.includes('ดี') || text.includes('สมส่วน') || text.includes('ผ่านเกณฑ์') || text.includes('อยู่ในเกณฑ์')) fillColor = [2, 132, 199];
+                else if (text.includes('ดี') || text.includes('ผ่านเกณฑ์') || text.includes('อยู่ในเกณฑ์')) fillColor = [2, 132, 199];
 
                 const badgeWidth = Math.min(38, cell.width - 6);
                 const badgeHeight = 7;

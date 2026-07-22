@@ -85,13 +85,13 @@ function evaluateWeightForHeight(gender, height, weight) {
     const fraction = (height - lower.h) / (upper.h - lower.h || 1);
     const cuts = lower.s.map((val, idx) => val + fraction * (upper.s[idx] - val));
     
-    // cuts: [-2SD, -1.5SD, +1.5SD, +2SD, +3SD]
-    if (weight < cuts[0]) return 'ผอม';
-    if (weight < cuts[1]) return 'ค่อนข้างผอม';
-    if (weight <= cuts[2]) return 'สมส่วน';
-    if (weight <= cuts[3]) return 'ท้วม';
-    if (weight <= cuts[4]) return 'เริ่มอ้วน';
-    return 'อ้วน';
+    // cuts[0]=-2SD, cuts[1]=-1.5SD, cuts[2]=+1.5SD, cuts[3]=+2SD, cuts[4]=+3SD
+    // แปลผลตามกราฟการเจริญเติบโต (สมุดสีชมพู กรมอนามัย)
+    if (weight < cuts[0]) return 'ผอม';              // < -2SD
+    if (weight < cuts[1]) return 'ค่อนข้างผอม';      // -2SD ถึง -1.5SD
+    if (weight <= cuts[3]) return 'สมส่วน';           // -1.5SD ถึง +2SD
+    if (weight <= cuts[4]) return 'ท้วม';             // +2SD ถึง +3SD
+    return 'อ้วน';                                    // > +3SD
 }
 
 function evaluateStepTest(value) {
@@ -103,9 +103,11 @@ function evaluateStepTest(value) {
 }
 
 function evaluateSingleLegHop(age, value) {
-    if (age === 4) return value >= 2 ? 'ผ่านเกณฑ์ (2-5 ครั้ง)' : 'ควรพัฒนา';
-    if (age === 5) return value >= 8 ? 'ผ่านเกณฑ์ (8-10 ครั้ง)' : 'ควรพัฒนา';
-    if (age === 6) return value >= 10 ? 'ผ่านเกณฑ์' : 'ควรพัฒนา'; // assume 10 for continuous
+    // Group 1 (age 4-6) → ผ่าน/ไม่ผ่าน
+    if (age === 4) return value >= 2 ? 'ผ่าน' : 'ไม่ผ่าน';
+    if (age === 5) return value >= 8 ? 'ผ่าน' : 'ไม่ผ่าน';
+    if (age === 6) return value >= 10 ? 'ผ่าน' : 'ไม่ผ่าน';
+    // Group 2 (age 7+) → descriptive
     if (age >= 7) return value >= 10 ? 'ผ่านเกณฑ์ (คล่อง)' : 'ควรพัฒนา';
     return '-';
 }
@@ -243,13 +245,17 @@ function evaluateSingleLegStance(age, gender, value, condition) {
         else range = [20.0, 25.0];
     }
     
+    // Group 1 (age 4-6) → ผ่าน/ไม่ผ่าน; Group 2 (age 7+) → descriptive
+    if (age <= 6) {
+        return value >= range[0] ? 'ผ่าน' : 'ไม่ผ่าน';
+    }
     if (value < range[0]) return 'ต่ำกว่ามาตรฐาน';
     if (value <= range[1]) return 'อยู่ในเกณฑ์มาตรฐาน';
     return 'สูงกว่ามาตรฐาน';
 }
 
 function evaluateStandingLongJump(age, gender, value) {
-    if (age >= 8 && age <= 14) {
+    if (age >= 7 && age <= 14) {
         let avg;
         if (age <= 9) avg = gender === 'male' ? 125 : 120;
         else if (age <= 11) avg = gender === 'male' ? 140 : 132;
@@ -258,16 +264,13 @@ function evaluateStandingLongJump(age, gender, value) {
         
         if (value >= avg) return 'ดี (สูงกว่าค่าเฉลี่ย)';
         return 'ควรพัฒนา (ต่ำกว่าค่าเฉลี่ย)';
-    } else if (age >= 4 && age <= 7) {
-        let min, max;
-        if (age === 4) { min = 60; max = 75; }
-        else if (age === 5) { min = 75; max = 90; }
-        else if (age === 6) { min = 90; max = 105; }
-        else { min = 105; max = 120; }
-        
-        if (value < min) return 'ต่ำกว่ามาตรฐาน';
-        if (value <= max) return 'อยู่ในเกณฑ์มาตรฐาน';
-        return 'สูงกว่ามาตรฐาน';
+    } else if (age >= 4 && age <= 6) {
+        // Group 1 → ผ่าน/ไม่ผ่าน
+        let min;
+        if (age === 4) min = 60;
+        else if (age === 5) min = 75;
+        else min = 90;
+        return value >= min ? 'ผ่าน' : 'ไม่ผ่าน';
     }
     
     return '-';
