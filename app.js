@@ -278,36 +278,22 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
             evaluation: bmiEval
         });
         
-        const stepHrRest = document.getElementById('step-hr-rest');
-        if (stepHrRest) {
-            const hrRest = stepHrRest.value || '-';
-            const hrPeak = document.getElementById('step-hr-peak').value || '';
-            const hrRec = document.getElementById('step-hr-recovery').value || '';
-            const bp = document.getElementById('step-bp').value || '-';
-            const spo2 = document.getElementById('step-spo2').value || '-';
-            const rpeVal = document.getElementById('step-rpe').value;
-            const rpe = rpeVal !== '' ? parseFloat(rpeVal) : 0;
-            const hasSymptoms = document.getElementById('step-symptoms').checked;
+        const stepHrPeakInput = document.getElementById('step-hr-peak');
+        if (stepHrPeakInput) {
+            const hrPeak = stepHrPeakInput.value || '';
+            const hrRecInput = document.getElementById('step-hr-recovery');
+            const hrRec = hrRecInput ? hrRecInput.value : '';
             
             let stepEval = 'ไม่ได้ประเมินผล';
-            let diffDisplay = '';
+            let stepValueDisplay = '-';
             
             if (hrPeak !== '' && hrRec !== '') {
                 const diff = parseInt(hrPeak) - parseInt(hrRec);
-                diffDisplay = ` (ลดลง ${diff} bpm)`;
-                
-                if (diff < 10 || hasSymptoms) {
-                    stepEval = 'ต่ำ';
-                } else if ((diff >= 10 && diff <= 19) || rpe > 7) {
-                    stepEval = 'ปานกลาง';
-                } else if (diff >= 30 && rpe <= 6) {
-                    stepEval = 'ดีมาก';
-                } else {
-                    stepEval = 'ดี';
-                }
+                stepEval = evaluateStepTest(diff);
+                stepValueDisplay = `HR Peak: ${hrPeak} bpm, HR Rec: ${hrRec} bpm (ลดลง ${diff} bpm)`;
+            } else if (hrPeak !== '' || hrRec !== '') {
+                stepValueDisplay = `HR Peak: ${hrPeak || '-'} bpm, HR Rec: ${hrRec || '-'} bpm`;
             }
-            
-            const stepValueDisplay = `HR Rest: ${hrRest}, HR Peak: ${hrPeak || '-'}, HR Rec: ${hrRec || '-'}${diffDisplay}<br>BP: ${bp}, SpO2: ${spo2}%, RPE: ${rpeVal || '-'}${hasSymptoms ? ' <br><span style="color:var(--danger); font-weight:bold;">*มีอาการผิดปกติ</span>' : ''}`;
             
             results.push({
                 name: '3 Min Step Test',
@@ -616,36 +602,15 @@ function setupDashboard() {
                     <div class="test-title">${test.name}</div>
                 </div>
                 <div style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 10px;">${test.desc}</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <div>
-                        <label style="font-size: 0.75rem; color: #555;">HR Rest (bpm)</label>
-                        <input type="number" id="step-hr-rest" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">HR Peak (เสร็จทันที)</label>
+                        <input type="number" id="step-hr-peak" placeholder="bpm" style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;">
                     </div>
                     <div>
-                        <label style="font-size: 0.75rem; color: #555;">HR Peak (เสร็จทันที)</label>
-                        <input type="number" id="step-hr-peak" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">HR Recovery (พัก 1 นาที)</label>
+                        <input type="number" id="step-hr-recovery" placeholder="bpm" style="width: 100%; padding: 8px 10px; border: 1.5px solid var(--primary); border-radius: 6px; box-sizing: border-box;">
                     </div>
-                    <div>
-                        <label style="font-size: 0.75rem; color: #555;">HR Recovery (พัก 1 นาที)</label>
-                        <input type="number" id="step-hr-recovery" style="width: 100%; padding: 8px; border: 1.5px solid var(--primary); border-radius: 4px; box-sizing: border-box;">
-                    </div>
-                    <div>
-                        <label style="font-size: 0.75rem; color: #555;">RPE (0-10)</label>
-                        <input type="number" id="step-rpe" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-                    </div>
-                    <div>
-                        <label style="font-size: 0.75rem; color: #555;">SpO2 (%)</label>
-                        <input type="number" id="step-spo2" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-                    </div>
-                    <div>
-                        <label style="font-size: 0.75rem; color: #555;">BP (mmHg)</label>
-                        <input type="text" id="step-bp" placeholder="120/80" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-                    </div>
-                </div>
-                <div style="margin-top: 5px;">
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.85rem; color: #d62828;">
-                        <input type="checkbox" id="step-symptoms" style="width: 16px; height: 16px;"> มีอาการผิดปกติ (เวียนศีรษะ, เจ็บหน้าอก, SpO2 ต่ำ, BP ผิดปกติ)
-                    </label>
                 </div>
             `;
         } else {
