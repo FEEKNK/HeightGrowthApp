@@ -89,8 +89,9 @@ function evaluateWeightForHeight(gender, height, weight) {
     // แปลผลตามกราฟการเจริญเติบโต (สมุดสีชมพู กรมอนามัย)
     if (weight < cuts[0]) return 'ผอม';              // < -2SD
     if (weight < cuts[1]) return 'ค่อนข้างผอม';      // -2SD ถึง -1.5SD
-    if (weight <= cuts[3]) return 'สมส่วน';           // -1.5SD ถึง +2SD
-    if (weight <= cuts[4]) return 'ท้วม';             // +2SD ถึง +3SD
+    if (weight <= cuts[2]) return 'สมส่วน';           // -1.5SD ถึง +1.5SD
+    if (weight <= cuts[3]) return 'ท้วม';             // +1.5SD ถึง +2SD
+    if (weight <= cuts[4]) return 'เริ่มอ้วน';         // +2SD ถึง +3SD
     return 'อ้วน';                                    // > +3SD
 }
 

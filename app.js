@@ -503,6 +503,7 @@ function generateVectorPDF() {
                 else if (text === 'ค่อนข้างผอม') fillColor = [245, 158, 11]; // amber
                 else if (text === 'ผอม') fillColor = [229, 57, 53]; // red
                 else if (text === 'ท้วม') fillColor = [245, 158, 11]; // amber
+                else if (text === 'เริ่มอ้วน') fillColor = [245, 158, 11]; // amber
                 else if (text === 'อ้วน') fillColor = [229, 57, 53]; // red
                 // Group 2 descriptive
                 else if (text.includes('ดีมาก')) fillColor = [46, 125, 50];
