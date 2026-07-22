@@ -599,6 +599,11 @@ input:focus {
     color: #ffffff;
 }
 
+.bdms-level-badge.empty {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+}
+
 /* Remarks block */
 .bdms-remarks-box {
     background: #eef2ff;

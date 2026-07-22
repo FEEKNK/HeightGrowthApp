@@ -86,12 +86,25 @@ btnBack.addEventListener('click', () => {
 });
 
 function getBadgeClass(evaluation) {
-    const ev = (evaluation || '').toString();
-    if (ev.includes('ดีมาก') || ev.includes('Excellent')) return 'excellent';
-    if (ev.includes('ดี') || ev.includes('Good') || ev.includes('สมส่วน') || ev.includes('อยู่ในเกณฑ์มาตรฐาน') || ev.includes('ผ่านเกณฑ์')) return 'good';
-    if (ev.includes('ปานกลาง') || ev.includes('Moderate')) return 'moderate';
-    if (ev.includes('ต่ำมาก') || ev.includes('Very Low')) return 'verylow';
-    if (ev.includes('ต่ำ') || ev.includes('ควรพัฒนา') || ev.includes('ควรปรับปรุง') || ev.includes('อ้วน') || ev.includes('ผอม') || ev.includes('ไม่ผ่านเกณฑ์')) return 'low';
+    const text = (evaluation || '').toString();
+    if (text === '-' || !text) return 'empty';
+
+    if (text === 'ผ่าน') return 'excellent';
+    if (text === 'ไม่ผ่าน') return 'low';
+
+    if (text === 'สมส่วน') return 'excellent';
+    if (text === 'ค่อนข้างผอม') return 'moderate';
+    if (text === 'ผอม') return 'low';
+    if (text === 'ท้วม') return 'moderate';
+    if (text === 'เริ่มอ้วน') return 'moderate';
+    if (text === 'อ้วน') return 'low';
+
+    if (text.includes('ดีมาก') || text.includes('Excellent')) return 'excellent';
+    if (text.includes('ต่ำมาก') || text.includes('Very Low')) return 'verylow';
+    if (text.includes('ปานกลาง') || text.includes('Moderate')) return 'moderate';
+    if (text.includes('ต่ำ') || text.includes('ควรพัฒนา') || text.includes('ควรปรับปรุง') || text.includes('ไม่ผ่านเกณฑ์')) return 'low';
+    if (text.includes('ดี') || text.includes('Good') || text.includes('ผ่านเกณฑ์') || text.includes('อยู่ในเกณฑ์') || text.includes('อยู่ในเกณฑ์มาตรฐาน')) return 'good';
+
     return 'good';
 }
 
