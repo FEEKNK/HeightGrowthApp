@@ -79,9 +79,124 @@ onboardingForm.addEventListener('submit', (e) => {
     switchScreen(screenDashboard);
 });
 
+
+
 btnBack.addEventListener('click', () => {
     switchScreen(screenOnboarding);
 });
+
+function getBadgeClass(evaluation) {
+    const ev = (evaluation || '').toString();
+    if (ev.includes('ดีมาก') || ev.includes('Excellent')) return 'excellent';
+    if (ev.includes('ดี') || ev.includes('Good') || ev.includes('สมส่วน') || ev.includes('อยู่ในเกณฑ์มาตรฐาน') || ev.includes('ผ่านเกณฑ์')) return 'good';
+    if (ev.includes('ปานกลาง') || ev.includes('Moderate')) return 'moderate';
+    if (ev.includes('ต่ำมาก') || ev.includes('Very Low')) return 'verylow';
+    if (ev.includes('ต่ำ') || ev.includes('ควรพัฒนา') || ev.includes('ควรปรับปรุง') || ev.includes('อ้วน') || ev.includes('ผอม') || ev.includes('ไม่ผ่านเกณฑ์')) return 'low';
+    return 'good';
+}
+
+function renderBDMSReport(user, results) {
+    const reportDiv = document.createElement('div');
+    reportDiv.className = 'bdms-pdf-container';
+    reportDiv.id = 'bdms-report-document';
+
+    const testDate = user.testDate || new Date().toLocaleDateString('th-TH');
+    const printDate = new Date().toLocaleString('th-TH');
+    const genderText = user.gender === 'male' ? 'ชาย / Male' : 'หญิง / Female';
+
+    let tableRowsHtml = '';
+    let hasNeedsImprovement = false;
+
+    results.forEach(r => {
+        const badgeClass = getBadgeClass(r.evaluation);
+        if (badgeClass === 'low' || badgeClass === 'verylow') {
+            hasNeedsImprovement = true;
+        }
+        const valStr = (r.value !== undefined && r.value !== null && r.value !== '') ? String(r.value) : '-';
+        const cleanValue = valStr.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '');
+        const unitStr = (r.unit && !cleanValue.includes(r.unit) && cleanValue !== '-') ? ` ${r.unit}` : '';
+        
+        tableRowsHtml += `
+            <tr>
+                <td style="font-weight: 500;">${r.name}</td>
+                <td style="font-weight: 600;">${cleanValue}${unitStr}</td>
+                <td style="text-align: center;">
+                    <span class="bdms-level-badge ${badgeClass}">${r.evaluation}</span>
+                </td>
+            </tr>
+        `;
+    });
+
+    const overallText = hasNeedsImprovement 
+        ? 'สมรรถภาพโดยรวม: ควรปรับปรุง / Overall Fitness Level: Needs Improvement'
+        : 'สมรรถภาพโดยรวม: อยู่ในเกณฑ์ดี / Overall Fitness Level: Good';
+    const overallClass = hasNeedsImprovement ? 'needs-improvement' : 'good-status';
+
+    const html = `
+        <div class="bdms-top-accent"></div>
+        <div class="bdms-header-banner">
+            <div class="bdms-brand-section">
+                <div class="bdms-brand-logo" style="background: #ffffff; padding: 4px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; min-width: 44px; box-sizing: border-box;">
+                    <img src="${window.sirirojBLogoBase64 || 'siriroj_b_logo.png'}" alt="Bangkok Hospital Siriroj Logo" style="width: 100%; height: 100%; object-fit: contain; display: block;">
+                </div>
+                <div class="bdms-header-titles">
+                    <div class="th-title">รายงานผลการทดสอบสมรรถภาพทางกาย</div>
+                    <div class="en-title">Physical Fitness Test Report</div>
+                    <div class="hospital-subtitle">โรงพยาบาลกรุงเทพสิริโรจน์ | Bangkok Hospital Siriroj</div>
+                </div>
+            </div>
+            <div class="bdms-header-meta">
+                <span class="bdms-pill-badge">BDMS WELLNESS</span>
+                <div class="bdms-doc-meta">
+                    <span><b>Ref:</b> BDMS-FT-${user.hn}</span>
+                    <span><b>Date:</b> ${testDate}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bdms-card-section">
+            <div class="bdms-sec-title">
+                <span style="font-size: 1.1rem;">👤</span> ข้อมูลส่วนบุคคล / Personal Information
+            </div>
+            <div class="bdms-info-box">
+                <div class="bdms-info-grid">
+                    <div class="bdms-info-row"><span class="bdms-info-label">HN:</span> <span class="bdms-info-val">${user.hn}</span></div>
+                    <div class="bdms-info-row"><span class="bdms-info-label">อายุ / Age:</span> <span class="bdms-info-val">${user.age} ปี / years</span></div>
+                    <div class="bdms-info-row"><span class="bdms-info-label">เพศ / Gender:</span> <span class="bdms-info-val">${genderText}</span></div>
+                    <div class="bdms-info-row"><span class="bdms-info-label">วันที่ทดสอบ / Test Date:</span> <span class="bdms-info-val">${testDate}</span></div>
+                    <div class="bdms-info-row"><span class="bdms-info-label">น้ำหนัก / Weight:</span> <span class="bdms-info-val">${user.weight} กก. / kg</span></div>
+                    <div class="bdms-info-row"><span class="bdms-info-label">ส่วนสูง / Height:</span> <span class="bdms-info-val">${user.height} ซม. / cm</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bdms-card-section">
+            <div class="bdms-sec-title">
+                <span style="font-size: 1.1rem;">📊</span> ผลการทดสอบ / Test Results
+            </div>
+            <table class="bdms-results-table">
+                <thead>
+                    <tr>
+                        <th style="width: 45%;">รายการทดสอบ / Test Item</th>
+                        <th style="width: 30%;">ผลลัพธ์ / Result</th>
+                        <th style="width: 25%; text-align: center;">ระดับ / Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRowsHtml}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 8px;">
+            <span>Bangkok Dusit Medical Services (BDMS) - Quality Medical Report</span>
+            <span>พิมพ์เมื่อ: ${printDate}</span>
+        </div>
+    `;
+
+    reportDiv.innerHTML = html;
+    return reportDiv;
+}
 
 document.getElementById('btn-submit-tests').addEventListener('click', () => {
     // Collect results
@@ -121,7 +236,6 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
                 }
                 
                 if (hopVal !== '-' || hopCountStr !== '') {
-                    // Combine count and qualitative result
                     let finalVal = '';
                     if (hopCountStr && hopVal !== '-') finalVal = `${hopCountStr} (${hopVal})`;
                     else if (hopCountStr) finalVal = hopCountStr;
@@ -164,7 +278,6 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
             evaluation: bmiEval
         });
         
-        // Manual collection for step-test since it has custom fields
         const stepHrRest = document.getElementById('step-hr-rest');
         if (stepHrRest) {
             const hrRest = stepHrRest.value || '-';
@@ -219,79 +332,14 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
         });
     });
 
-    // Create report template
-    const reportDiv = document.createElement('div');
-    reportDiv.className = 'pdf-report';
-    reportDiv.style.padding = '20px 30px';
-    reportDiv.style.backgroundColor = '#fff';
-    reportDiv.style.color = '#333';
-    reportDiv.style.fontFamily = "'Kanit', sans-serif";
-    
-    let html = `
-        <h1 style="text-align: center; color: #4361ee; font-size: 24px; margin-bottom: 5px;">สรุปผลการประเมินสมรรถภาพทางกาย</h1>
-        <h2 style="text-align: center; color: #3a0ca3; font-size: 18px; margin-bottom: 20px;">GrowthFit</h2>
-        
-        <div style="margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px;">
-            <h3 style="font-size: 16px; margin-bottom: 10px;">ข้อมูลเบื้องต้น</h3>
-            <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.95em;">
-                <tr>
-                    <td style="padding: 6px 0;"><strong>HN:</strong> ${currentUser.hn}</td>
-                    <td style="padding: 6px 0;"><strong>ชื่อ-นามสกุล:</strong> ${currentUser.name}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 6px 0;"><strong>เพศ:</strong> ${currentUser.gender === 'male' ? 'ชาย' : 'หญิง'}</td>
-                    <td style="padding: 6px 0;"><strong>อายุ:</strong> ${currentUser.age} ปี (กลุ่ม ${currentUser.group})</td>
-                </tr>
-                <tr>
-                    <td style="padding: 6px 0;"><strong>น้ำหนัก:</strong> ${currentUser.weight} กก.</td>
-                    <td style="padding: 6px 0;"><strong>ส่วนสูง:</strong> ${currentUser.height} ซม.</td>
-                </tr>
-                <tr>
-                    <td style="padding: 6px 0;" colspan="2"><strong>BMI:</strong> ${currentUser.bmi}</td>
-                </tr>
-            </table>
-        </div>
-        
-        <div>
-            <h3 style="font-size: 16px; margin-bottom: 10px;">ผลการทดสอบ</h3>
-            <table style="width: 100%; text-align: left; border-collapse: collapse; margin-top: 10px; font-size: 0.95em;">
-                <thead>
-                    <tr style="background-color: #f8f9fa;">
-                        <th style="padding: 10px; border: 1px solid #ddd;">รายการทดสอบ</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">ผลลัพธ์</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">การประเมิน</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
-    
-    results.forEach(r => {
-        const evalColor = (r.evaluation.includes('ควรพัฒนา') || r.evaluation.includes('ต่ำ') || r.evaluation.includes('อ้วน') || r.evaluation.includes('ผอม')) ? '#e63946' : '#2a9d8f';
-        html += `
-                    <tr>
-                        <td style="padding: 10px; border: 1px solid #ddd;">${r.name}</td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">${r.value || '-'} ${r.unit}</td>
-                        <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: ${evalColor};">${r.evaluation}</td>
-                    </tr>
-        `;
-    });
-    
-    html += `
-                </tbody>
-            </table>
-        </div>
-        <div style="margin-top: 30px; text-align: right; font-size: 0.8em; color: #666;">
-            <p>พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}</p>
-        </div>
-    `;
-    
-    reportDiv.innerHTML = html;
+    // Create BDMS report template
+    const reportDiv = renderBDMSReport(currentUser, results);
     
     // Save for PDF generation and show on screen
     currentReportDiv = reportDiv;
     currentResults = results;
     summaryContainer.innerHTML = '';
-    summaryContainer.appendChild(reportDiv.cloneNode(true));
+    summaryContainer.appendChild(reportDiv);
     
     switchScreen(screenSummary);
 });
@@ -301,149 +349,194 @@ btnBackToDashboard.addEventListener('click', () => {
 });
 
 btnDownloadPdf.addEventListener('click', () => {
-
     if (currentResults.length === 0 || !currentUser) return;
     
-    // Show loading state
     const originalText = btnDownloadPdf.innerText;
     btnDownloadPdf.innerText = 'กำลังสร้าง PDF...';
     btnDownloadPdf.disabled = true;
 
-    // Use setTimeout so the UI can update before heavy PDF work
     setTimeout(() => {
         try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-
-            // Add Kanit Font
-            if (window.kanitBase64) {
-                doc.addFileToVFS('Kanit-Regular.ttf', window.kanitBase64);
-                doc.addFont('Kanit-Regular.ttf', 'Kanit', 'normal');
-                doc.setFont('Kanit');
-            }
-
-            // Colors
-            const primaryColor = [67, 97, 238];
-            const darkColor = [58, 12, 163];
-
-            // Header
-            doc.setFontSize(18);
-            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-            doc.text('สรุปผลการประเมินสมรรถภาพทางกาย', 105, 20, { align: 'center' });
-            
-            doc.setFontSize(22);
-            doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-            doc.text('GrowthFit', 105, 30, { align: 'center' });
-
-            // Patient Info Table
-            const infoData = [
-                [`HN: ${currentUser.hn}`, `ชื่อ-นามสกุล: ${currentUser.name}`],
-                [`เพศ: ${currentUser.gender === 'male' ? 'ชาย' : 'หญิง'}`, `อายุ: ${currentUser.age} ปี (กลุ่ม ${currentUser.group})`],
-                [`น้ำหนัก: ${currentUser.weight} กก.`, `ส่วนสูง: ${currentUser.height} ซม.`],
-                [`BMI: ${currentUser.bmi}`, '']
-            ];
-
-            doc.autoTable({
-                startY: 40,
-                body: infoData,
-                theme: 'plain',
-                styles: {
-                    font: 'Kanit',
-                    fontSize: 12,
-                    textColor: [50, 50, 50],
-                    cellPadding: 2
-                },
-                columnStyles: {
-                    0: { cellWidth: 85 },
-                    1: { cellWidth: 85 }
-                }
-            });
-
-            // Results Table
-            let currentY = doc.lastAutoTable.finalY + 15;
-            
-            doc.setFontSize(14);
-            doc.setTextColor(30, 30, 30);
-            doc.text('ผลการทดสอบ', 14, currentY);
-            currentY += 5;
-
-            const tableBody = currentResults.map(r => {
-                const isFail = r.evaluation.includes('ควรพัฒนา') || r.evaluation.includes('ต่ำ') || r.evaluation.includes('อ้วน') || r.evaluation.includes('ผอม');
-                // Convert value to string before replacing HTML tags, handle empty correctly
-                const valStr = (r.value !== undefined && r.value !== null && r.value !== '') ? String(r.value) : '-';
-                const cleanValue = valStr.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '');
-                const displayUnit = r.unit && valStr !== '-' ? ` ${r.unit}` : '';
-                return [
-                    r.name,
-                    `${cleanValue}${displayUnit}`.trim(),
-                    r.evaluation,
-                    isFail // pass it as 4th element to use in didParseCell
-                ];
-            });
-
-            doc.autoTable({
-                startY: currentY,
-                head: [['รายการทดสอบ', 'ผลลัพธ์', 'การประเมิน']],
-                body: tableBody,
-                theme: 'grid',
-                styles: {
-                    font: 'Kanit',
-                    fontSize: 11,
-                    textColor: [40, 40, 40],
-                    cellPadding: 4,
-                    valign: 'middle'
-                },
-                headStyles: {
-                    fillColor: [240, 240, 240],
-                    textColor: [30, 30, 30],
-                    fontStyle: 'bold',
-                    lineColor: [200, 200, 200],
-                    lineWidth: 0.1
-                },
-                bodyStyles: {
-                    lineColor: [200, 200, 200],
-                    lineWidth: 0.1
-                },
-                didParseCell: function(data) {
-                    if (data.section === 'body' && data.column.index === 2) {
-                        const isFail = data.row.raw[3];
-                        if (isFail) {
-                            data.cell.styles.textColor = [230, 57, 70];
-                            data.cell.styles.fontStyle = 'bold';
-                        } else {
-                            data.cell.styles.textColor = [42, 157, 143];
-                            data.cell.styles.fontStyle = 'bold';
-                        }
-                    }
-                },
-                columns: [
-                    { header: 'รายการทดสอบ', dataKey: 0 },
-                    { header: 'ผลลัพธ์', dataKey: 1 },
-                    { header: 'การประเมิน', dataKey: 2 }
-                ]
-            });
-
-            // Footer
-            const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
-            doc.setFontSize(10);
-            doc.setTextColor(100, 100, 100);
-            doc.text(`พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}`, 195, pageHeight - 15, { align: 'right' });
-
-            doc.save(`GrowthFit_Report_${currentUser.hn}.pdf`);
-        } catch (error) {
-            console.error('PDF Generation Error:', error);
+            generateVectorPDF();
+        } catch (err) {
+            console.error('PDF Generation error:', err);
             alert('เกิดข้อผิดพลาดในการสร้าง PDF');
         } finally {
             btnDownloadPdf.innerText = originalText;
             btnDownloadPdf.disabled = false;
         }
-    }, 100);
-
+    }, 50);
 });
+
+function generateVectorPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    if (window.kanitBase64) {
+        doc.addFileToVFS('Kanit-Regular.ttf', window.kanitBase64);
+        doc.addFont('Kanit-Regular.ttf', 'Kanit', 'normal');
+        doc.setFont('Kanit');
+    }
+
+    const marginX = 12;
+    const printableWidth = 186; // 210 - 24
+
+    // 1. Top Header Banner
+    doc.setFillColor(0, 58, 112); // BDMS Navy
+    doc.roundedRect(marginX, 12, printableWidth, 26, 3, 3, 'F');
+    doc.setFillColor(0, 163, 224); // BDMS Cyan Accent
+    doc.rect(marginX, 12, printableWidth, 2.5, 'F');
+
+    // Logo Container Box (White Background for official B emblem logo image)
+    const logoX = marginX + 6;
+    const logoY = 16.5;
+    const logoW = 17;
+    const logoH = 17;
+
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(logoX, logoY, logoW, logoH, 2.5, 2.5, 'F');
+
+    const logoImg = window.sirirojBLogoBase64 || window.sirirojLogoBase64;
+    if (logoImg) {
+        doc.addImage(logoImg, 'PNG', logoX + 1.5, logoY + 1.5, logoW - 3, logoH - 3);
+    }
+
+    // Brand Titles
+    const titleX = logoX + logoW + 6;
+    doc.setFontSize(14.5);
+    doc.setTextColor(255, 255, 255);
+    doc.text('รายงานผลการทดสอบสมรรถภาพทางกาย', titleX, 22);
+
+    doc.setFontSize(9.5);
+    doc.setTextColor(125, 211, 252);
+    doc.text('Physical Fitness Test Report', titleX, 28);
+
+    doc.setFontSize(8.5);
+    doc.setTextColor(186, 230, 253);
+    doc.text('โรงพยาบาลกรุงเทพสิริโรจน์ | Bangkok Hospital Siriroj', titleX, 34);
+
+    // BDMS Wellness Pill Badge (Right)
+    doc.setFillColor(0, 163, 224);
+    doc.roundedRect(marginX + 138, 16.5, 42, 6.5, 2, 2, 'F');
+    doc.setFontSize(7.5);
+    doc.setTextColor(255, 255, 255);
+    doc.text('BDMS WELLNESS', marginX + 159, 21, { align: 'center' });
+
+    // Ref & Date right text
+    const testDate = currentUser.testDate || new Date().toLocaleDateString('th-TH');
+    doc.setFontSize(7.5);
+    doc.setTextColor(226, 232, 240);
+    doc.text(`Ref: BDMS-FT-${currentUser.hn}`, marginX + 180, 27.5, { align: 'right' });
+    doc.text(`Date: ${testDate}`, marginX + 180, 33, { align: 'right' });
+
+    // 2. Personal Information Box
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(203, 213, 225);
+    doc.roundedRect(marginX, 43, printableWidth, 30, 3, 3, 'FD');
+
+    doc.setFontSize(10.5);
+    doc.setTextColor(0, 58, 112);
+    doc.text('ข้อมูลส่วนบุคคล / Personal Information', marginX + 6, 50);
+
+    // Row 1
+    const infoY1 = 57.5;
+    doc.setFontSize(8.5);
+    doc.setTextColor(100, 116, 139); doc.text('HN:', marginX + 6, infoY1);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.hn}`, marginX + 15, infoY1);
+
+    doc.setTextColor(100, 116, 139); doc.text('เพศ / Gender:', marginX + 66, infoY1);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.gender === 'male' ? 'ชาย / Male' : 'หญิง / Female'}`, marginX + 90, infoY1);
+
+    doc.setTextColor(100, 116, 139); doc.text('อายุ / Age:', marginX + 130, infoY1);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.age} ปี / years`, marginX + 147, infoY1);
+
+    // Row 2
+    const infoY2 = 66;
+    doc.setTextColor(100, 116, 139); doc.text('น้ำหนัก / Weight:', marginX + 6, infoY2);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.weight} กก. / kg`, marginX + 34, infoY2);
+
+    doc.setTextColor(100, 116, 139); doc.text('ส่วนสูง / Height:', marginX + 66, infoY2);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.height} ซม. / cm`, marginX + 94, infoY2);
+
+    doc.setTextColor(100, 116, 139); doc.text('วันที่ทดสอบ / Test Date:', marginX + 130, infoY2);
+    doc.setTextColor(15, 23, 42); doc.text(`${testDate}`, marginX + 164, infoY2);
+
+    // 3. Test Results Title & Table
+    doc.setFontSize(10.5);
+    doc.setTextColor(0, 58, 112);
+    doc.text('ผลการทดสอบ / Test Results', marginX + 2, 80);
+
+    const tableBody = currentResults.map(r => {
+        const valStr = (r.value !== undefined && r.value !== null && r.value !== '') ? String(r.value) : '-';
+        const cleanValue = valStr.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '');
+        const displayUnit = r.unit && !cleanValue.includes(r.unit) && cleanValue !== '-' ? ` ${r.unit}` : '';
+        return [r.name, `${cleanValue}${displayUnit}`.trim(), r.evaluation];
+    });
+
+    doc.autoTable({
+        startY: 84,
+        margin: { left: marginX, right: marginX },
+        head: [['รายการทดสอบ / Test Item', 'ผลลัพธ์ / Result', 'ระดับ / Level']],
+        body: tableBody,
+        theme: 'grid',
+        styles: {
+            font: 'Kanit',
+            fontSize: 9.5,
+            textColor: [30, 41, 59],
+            cellPadding: 4,
+            valign: 'middle'
+        },
+        headStyles: {
+            fillColor: [0, 58, 112],
+            textColor: [255, 255, 255],
+            fontStyle: 'normal',
+            halign: 'left'
+        },
+        columnStyles: {
+            0: { cellWidth: 90 },
+            1: { cellWidth: 51 },
+            2: { cellWidth: 45, halign: 'center' }
+        },
+        didDrawCell: function(data) {
+            if (data.section === 'body' && data.column.index === 2) {
+                const cell = data.cell;
+                const text = cell.raw || '';
+                if (!text || text === '-') return;
+                
+                // Fill cell background to draw vector pill badge cleanly
+                doc.setFillColor(255, 255, 255);
+                if (data.row.index % 2 === 1) doc.setFillColor(248, 250, 252);
+                doc.rect(cell.x + 0.2, cell.y + 0.2, cell.width - 0.4, cell.height - 0.4, 'F');
+
+                let fillColor = [2, 132, 199]; // default blue
+                if (text.includes('ดีมาก')) fillColor = [46, 125, 50];
+                else if (text.includes('ต่ำมาก')) fillColor = [229, 57, 53];
+                else if (text.includes('ปานกลาง')) fillColor = [255, 179, 0];
+                else if (text.includes('ต่ำ') || text.includes('ควรพัฒนา')) fillColor = [239, 68, 68];
+                else if (text.includes('ดี') || text.includes('สมส่วน') || text.includes('ผ่านเกณฑ์') || text.includes('อยู่ในเกณฑ์')) fillColor = [2, 132, 199];
+
+                const badgeWidth = Math.min(38, cell.width - 6);
+                const badgeHeight = 7;
+                const badgeX = cell.x + (cell.width - badgeWidth) / 2;
+                const badgeY = cell.y + (cell.height - badgeHeight) / 2;
+
+                doc.setFillColor(fillColor[0], fillColor[1], fillColor[2]);
+                doc.roundedRect(badgeX, badgeY, badgeWidth, badgeHeight, 3.5, 3.5, 'F');
+
+                doc.setFontSize(8.5);
+                doc.setTextColor(255, 255, 255);
+                doc.text(text, cell.x + cell.width / 2, badgeY + 4.8, { align: 'center' });
+            }
+        }
+    });
+
+    // 4. Page Footer
+    doc.setFontSize(7.5);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Bangkok Dusit Medical Services (BDMS) - Quality Medical Report | พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}`, 105, 285, { align: 'center' });
+
+    doc.save(`BDMS_Fitness_Report_${currentUser.hn}.pdf`);
+}
 
 btnViewCriteria.addEventListener('click', () => {
     switchScreen(screenCriteria);

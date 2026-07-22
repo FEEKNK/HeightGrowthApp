@@ -369,3 +369,273 @@ input:focus {
 .criteria-table tr:nth-child(even) {
     background-color: #f8f9fa;
 }
+
+/* ==========================================================================
+   BDMS Physical Fitness Test Report Design (Medical Corporate Style)
+   ========================================================================== */
+
+.bdms-pdf-container {
+    background: #ffffff;
+    color: #1e293b;
+    border-radius: 12px;
+    padding: 24px 28px;
+    box-shadow: 0 10px 28px rgba(0, 58, 112, 0.12);
+    font-family: 'Kanit', sans-serif;
+    max-width: 750px;
+    margin: 0 auto;
+    border: 1px solid #cbd5e1;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.bdms-top-accent {
+    height: 5px;
+    background: linear-gradient(90deg, #003A70 0%, #00A3E0 50%, #002D62 100%);
+    border-radius: 12px 12px 0 0;
+    margin: -24px -28px 18px -28px;
+}
+
+.bdms-header-banner {
+    background: linear-gradient(135deg, #003A70 0%, #002D62 100%);
+    color: #ffffff;
+    padding: 16px 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 14px rgba(0, 58, 112, 0.18);
+}
+
+.bdms-brand-section {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.bdms-brand-logo {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.bdms-header-titles .th-title {
+    font-size: 1.22rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #ffffff;
+    letter-spacing: 0.2px;
+}
+
+.bdms-header-titles .en-title {
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: #7dd3fc;
+    letter-spacing: 0.6px;
+    margin-top: 2px;
+}
+
+.bdms-header-titles .hospital-subtitle {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: #bae6fd;
+    margin-top: 3px;
+}
+
+.bdms-header-meta {
+    text-align: right;
+}
+
+.bdms-pill-badge {
+    display: inline-block;
+    background: #00A3E0;
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 16px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(0, 163, 224, 0.3);
+}
+
+.bdms-doc-meta {
+    font-size: 0.72rem;
+    color: #e2e8f0;
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.bdms-card-section {
+    margin-bottom: 16px;
+}
+
+.bdms-sec-title {
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: #003A70;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #003A70;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bdms-info-box {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 12px 18px;
+}
+
+.bdms-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 24px;
+}
+
+.bdms-info-row {
+    font-size: 0.88rem;
+    color: #334155;
+}
+
+.bdms-info-label {
+    color: #64748b;
+    font-weight: 400;
+}
+
+.bdms-info-val {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+/* Results Table BDMS Style */
+.bdms-results-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    margin-top: 8px;
+}
+
+.bdms-results-table th {
+    background: #003A70;
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 10px 14px;
+    text-align: left;
+}
+
+.bdms-results-table td {
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    color: #1e293b;
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
+}
+
+.bdms-results-table tr:nth-child(even) td {
+    background: #f8fafc;
+}
+
+.bdms-results-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badges for levels */
+.bdms-level-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-align: center;
+    min-width: 85px;
+}
+
+.bdms-level-badge.excellent {
+    background-color: #2e7d32;
+    color: #ffffff;
+}
+
+.bdms-level-badge.good {
+    background-color: #0284c7;
+    color: #ffffff;
+}
+
+.bdms-level-badge.moderate {
+    background-color: #ffb300;
+    color: #ffffff;
+}
+
+.bdms-level-badge.low {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+.bdms-level-badge.verylow {
+    background-color: #e53935;
+    color: #ffffff;
+}
+
+/* Remarks block */
+.bdms-remarks-box {
+    background: #eef2ff;
+    border-left: 4px solid #003A70;
+    padding: 12px 18px;
+    border-radius: 6px;
+    margin-top: 16px;
+    font-size: 0.9rem;
+    color: #1e3a8a;
+}
+
+/* Overall Status Banner */
+.bdms-overall-banner {
+    background: #e0f2fe;
+    border-left: 6px solid #0056B3;
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: #0369a1;
+}
+
+.bdms-overall-banner.needs-improvement {
+    background: #fef2f2;
+    border-left: 6px solid #ef4444;
+    color: #991b1b;
+}
+
+.bdms-overall-banner.good-status {
+    background: #f0fdf4;
+    border-left: 6px solid #10b981;
+    color: #166534;
+}
+
+/* Print Rules */
+@media print {
+    body {
+        background: none;
+    }
+    .background-shapes, .app-header, button, .btn-primary {
+        display: none !important;
+    }
+    .bdms-pdf-container {
+        box-shadow: none;
+        border: none;
+        max-width: 100%;
+        padding: 0;
+    }
+}

@@ -20,17 +20,17 @@
             <header class="app-header">
                 <h1>GrowthFit</h1>
                 <p>ระบบคัดกรองเตรียมความพร้อมออกกำลังกาย</p>
-                <button id="btn-view-criteria" class="btn-primary" style="margin-top: 15px; padding: 10px; font-size: 1rem; background: var(--secondary); box-shadow: none;">ดูเกณฑ์มาตรฐาน</button>
+                <button id="btn-view-criteria" class="btn-primary" type="button" style="margin-top: 15px; padding: 10px 16px; font-size: 0.95rem; background: var(--secondary); box-shadow: none;">ดูเกณฑ์มาตรฐาน</button>
             </header>
             
             <form id="onboarding-form" class="glass-card">
                 <div class="form-group">
                     <label for="hn">HN (Hospital Number)</label>
-                    <input type="text" id="hn" placeholder="ระบุ HN" required>
+                    <input type="text" id="hn" placeholder="ระบุ HN (เช่น 45-67-6)" required>
                 </div>
                 <div class="form-group">
                     <label for="child-name">ชื่อ-นามสกุล</label>
-                    <input type="text" id="child-name" placeholder="ชื่อน้องๆ" pattern="^[a-zA-Zก-๙ ]+$" title="กรุณากรอกเฉพาะตัวอักษรเท่านั้น (ห้ามใช้ตัวเลขหรือสัญลักษณ์)" oninput="this.value = this.value.replace(/[^a-zA-Zก-๙ ]/g, '')" required>
+                    <input type="text" id="child-name" placeholder="ระบุชื่อ-นามสกุล" pattern="^[a-zA-Zก-๙. ]+$" title="กรุณากรอกเฉพาะตัวอักษรเท่านั้น" oninput="this.value = this.value.replace(/[^a-zA-Zก-๙. ]/g, '')" required>
                 </div>
                 <div class="form-group">
                     <label>เพศ</label>
@@ -44,7 +44,7 @@
                 </div>
                 <div class="form-group">
                     <label for="age">อายุ (ปี)</label>
-                    <input type="number" id="age" min="4" max="14" placeholder="ระบุอายุ" required>
+                    <input type="number" id="age" min="4" max="120" placeholder="ระบุอายุ" required>
                 </div>
                 <div class="form-group row">
                     <div class="col">
@@ -264,7 +264,10 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="kanit-font.js"></script>
+    <script src="logo_data.js"></script>
+    <script src="logo_b_data.js"></script>
     <script src="criteria.js"></script>
     <script src="app.js"></script>
 </body>
