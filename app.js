@@ -499,7 +499,7 @@ function generateVectorPDF() {
             font: 'Kanit',
             fontSize: 9.5,
             textColor: [30, 41, 59],
-            cellPadding: 4,
+            cellPadding: 3,
             valign: 'middle'
         },
         headStyles: {
@@ -557,10 +557,67 @@ function generateVectorPDF() {
         }
     });
 
-    // 4. Page Footer
+    // 4. Exercise Programs QR Codes
+    let finalY = doc.lastAutoTable.finalY || 180;
+    let qrStartY = finalY + 10;
+    
+    // Only add a new page if it's REALLY overflowing
+    if (qrStartY > 240) {
+        doc.addPage();
+        qrStartY = 20; 
+    }
+    
+    // Draw Section Title
+    doc.setFillColor(241, 245, 249); // slate-100
+    doc.roundedRect(15, qrStartY, 180, 8, 2, 2, 'F');
+    doc.setFontSize(10.5);
+    doc.setTextColor(15, 23, 42); // slate-900
+    doc.text('โปรแกรมออกกำลังกายที่แนะนำ (Recommended Exercise Program)', 20, qrStartY + 5.5);
+    
+    // Layout: 2 Groups (Left for 4-6, Right for 7-14)
+    const qrSize = 24;
+    const yPos = qrStartY + 16;
+    const textY = yPos + qrSize + 4;
+    
+    // --- Group 1: 4-6 Years (Left) ---
+    doc.setFontSize(9);
+    doc.setTextColor(15, 23, 42); // slate-900
+    doc.text('สำหรับเด็กอายุ 4-6 ปี', 60, qrStartY + 14, { align: 'center' });
+    
+    // 4-6 TH
+    doc.addImage(qr_4_6_th, 'PNG', 32, yPos, qrSize, qrSize);
+    doc.setFontSize(7.5);
+    doc.setTextColor(71, 85, 105);
+    doc.text('ฉบับภาษาไทย', 32 + (qrSize/2), textY, { align: 'center' });
+    
+    // 4-6 EN
+    doc.addImage(qr_4_6_en, 'PNG', 64, yPos, qrSize, qrSize);
+    doc.text('English Version', 64 + (qrSize/2), textY, { align: 'center' });
+    
+    // --- Group 2: 7-14 Years (Right) ---
+    doc.setFontSize(9);
+    doc.setTextColor(15, 23, 42);
+    doc.text('สำหรับเด็กอายุ 7-14 ปี', 150, qrStartY + 14, { align: 'center' });
+    
+    // 7-14 TH
+    doc.addImage(qr_7_14_th, 'PNG', 122, yPos, qrSize, qrSize);
+    doc.setFontSize(7.5);
+    doc.setTextColor(71, 85, 105);
+    doc.text('ฉบับภาษาไทย', 122 + (qrSize/2), textY, { align: 'center' });
+    
+    // 7-14 EN
+    doc.addImage(qr_7_14_en, 'PNG', 154, yPos, qrSize, qrSize);
+    doc.text('English Version', 154 + (qrSize/2), textY, { align: 'center' });
+    
+    // Footer Note
     doc.setFontSize(7.5);
     doc.setTextColor(148, 163, 184);
-    doc.text(`Bangkok Dusit Medical Services (BDMS) - Quality Medical Report | พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}`, 105, 285, { align: 'center' });
+    doc.text('สแกน QR Code เพื่อดูหรือดาวน์โหลดโปรแกรมออกกำลังกาย', 105, textY + 6, { align: 'center' });
+
+    // 5. Page Footer
+    doc.setFontSize(7.5);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Bangkok Dusit Medical Services (BDMS) - Quality Medical Report | พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}`, 105, 288, { align: 'center' });
 
     doc.save(`BDMS_Fitness_Report_${currentUser.hn}.pdf`);
 }
