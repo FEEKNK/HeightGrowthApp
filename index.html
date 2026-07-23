@@ -103,16 +103,16 @@
                 <h2 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 15px;">กลุ่มที่ 1 (อายุ 4-6 ปี)</h2>
                 
                 <h3>น้ำหนักตามเกณฑ์ส่วนสูง</h3>
-                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">เกณฑ์อ้างอิงจากกรมอนามัย (สำหรับเด็ก 2-7 ปี)</p>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">อ้างอิง: เกณฑ์การเจริญเติบโตของเด็กอายุ 2-7 ปี กรมอนามัย พ.ศ. 2542</p>
                 <table class="criteria-table">
                     <tr><th rowspan="2">ส่วนสูง (ซม.)</th><th colspan="2">ช่วงน้ำหนักที่ "สมส่วน" (กก.)</th></tr>
                     <tr><th style="font-size: 0.85em;">ชาย</th><th style="font-size: 0.85em;">หญิง</th></tr>
-                    <tr><td>90</td><td>11.8 - 15.2</td><td>11.2 - 14.8</td></tr>
+                    <tr><td>90</td><td>11.8 - 15.0</td><td>11.2 - 14.5</td></tr>
                     <tr><td>100</td><td>14.0 - 18.5</td><td>13.8 - 18.0</td></tr>
-                    <tr><td>110</td><td>16.2 - 21.5</td><td>16.0 - 21.0</td></tr>
-                    <tr><td>120</td><td>19.8 - 26.2</td><td>20.5 - 27.0</td></tr>
-                    <tr><td>130</td><td>23.8 - 31.8</td><td>26.5 - 35.0</td></tr>
-                    <tr><td>140</td><td>28.8 - 39.0</td><td>34.2 - 47.0</td></tr>
+                    <tr><td>110</td><td>16.2 - 21.5</td><td>16.0 - 21.5</td></tr>
+                    <tr><td>120</td><td>19.5 - 26.0</td><td>20.5 - 27.0</td></tr>
+                    <tr><td>130</td><td>24.0 - 32.0</td><td>26.5 - 35.0</td></tr>
+                    <tr><td>140</td><td>29.0 - 39.0</td><td>34.0 - 47.0</td></tr>
                 </table>
                 <br>
                 
@@ -260,17 +260,50 @@
                     <tr><td>13</td><td>5 ลงมา</td><td>6 - 11</td><td>12 - 16</td><td>17 - 22</td><td>23 ขึ้นไป</td></tr>
                     <tr><td>14</td><td>7 ลงมา</td><td>8 - 13</td><td>14 - 18</td><td>19 - 23</td><td>24 ขึ้นไป</td></tr>
                 </table>
+
+                <br>
+                <div style="padding-top: 15px; border-top: 2px dashed #e2e8f0; margin-top: 10px;">
+                    <h3>Target HR Range (เป้าหมายอัตราการเต้นของหัวใจ)</h3>
+                    <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;">ข้อมูลสำหรับช่วงอายุ 4-14 ปี</p>
+                    <table class="criteria-table">
+                        <tr><th>อายุ (ปี)</th><th>Target HR Range (bpm)</th></tr>
+                        <tr><td>4</td><td>130 - 157</td></tr>
+                        <tr><td>5</td><td>130 - 156</td></tr>
+                        <tr><td>6</td><td>129 - 156</td></tr>
+                        <tr><td>7</td><td>129 - 155</td></tr>
+                        <tr><td>8</td><td>128 - 155</td></tr>
+                        <tr><td>9</td><td>128 - 154</td></tr>
+                        <tr><td>10</td><td>128 - 154</td></tr>
+                        <tr><td>11</td><td>127 - 153</td></tr>
+                        <tr><td>12</td><td>127 - 152</td></tr>
+                        <tr><td>13</td><td>126 - 152</td></tr>
+                        <tr><td>14</td><td>126 - 151</td></tr>
+                    </table>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Chart Modal -->
+    <div id="chart-modal" class="modal">
+        <div class="modal-content glass-card">
+            <span class="close-btn" id="close-chart-modal">&times;</span>
+            <h2 style="color: var(--primary); margin-bottom: 10px;">กราฟน้ำหนักตามเกณฑ์ส่วนสูง</h2>
+            <div style="position: relative; height: 450px; width: 100%;">
+                <canvas id="growthChart"></canvas>
+            </div>
+            <p style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 10px;">อ้างอิงจากเกณฑ์การเจริญเติบโตของกรมอนามัย</p>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="kanit-font.js"></script>
     <script src="logo_data.js"></script>
     <script src="logo_b_data.js"></script>
-    <script src="criteria.js"></script>
-    <script src="app.js"></script>
+    <script src="criteria.js?v=6"></script>
+    <script src="app.js?v=6"></script>
 </body>
 </html>

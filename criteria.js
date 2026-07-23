@@ -1,5 +1,19 @@
 // criteria.js
 
+const targetHRTable = {
+    4:  { min: 130, max: 157 },
+    5:  { min: 130, max: 156 },
+    6:  { min: 129, max: 156 },
+    7:  { min: 129, max: 155 },
+    8:  { min: 128, max: 155 },
+    9:  { min: 128, max: 154 },
+    10: { min: 128, max: 154 },
+    11: { min: 127, max: 153 },
+    12: { min: 127, max: 152 },
+    13: { min: 126, max: 152 },
+    14: { min: 126, max: 151 }
+};
+
 function evaluateResult(testId, age, gender, valueStr) {
     const value = parseFloat(valueStr);
     if (isNaN(value)) return '-';
@@ -35,58 +49,112 @@ function evaluateResult(testId, age, gender, valueStr) {
     }
 }
 
+// น้ำหนักตามเกณฑ์ส่วนสูง (Weight-for-Height)
+// อ้างอิง: การจัดทำเกณฑ์อ้างอิงการเจริญเติบโตของเด็กอายุ 2-7 ปี กรมอนามัย พ.ศ. 2542
+// s = [-2SD, -1.5SD, +1.5SD, +2SD, +3SD]
+// Zones: ผอม(<-2SD), ค่อนข้างผอม(-2SD~-1.5SD), สมส่วน(-1.5SD~+1.5SD), ท้วม(+1.5SD~+2SD), เริ่มอ้วน(+2SD~+3SD), อ้วน(>+3SD)
+const weightHeightCriteriaData = {
+    male: [
+        {h: 85,  s: [10.0, 10.5, 13.5, 14.5, 16.5]},
+        {h: 90,  s: [11.0, 11.6, 15.0, 16.2, 18.5]},
+        {h: 95,  s: [12.1, 12.8, 16.6, 18.0, 20.7]},
+        {h: 100, s: [13.3, 14.1, 18.3, 20.0, 23.1]},
+        {h: 105, s: [14.6, 15.5, 20.1, 22.1, 25.7]},
+        {h: 110, s: [16.0, 17.0, 22.0, 24.4, 28.5]},
+        {h: 115, s: [17.5, 18.6, 24.1, 26.9, 31.6]},
+        {h: 120, s: [19.1, 20.4, 26.4, 29.6, 35.1]},
+        {h: 125, s: [20.8, 22.3, 28.9, 32.6, 39.0]},
+        {h: 130, s: [22.7, 24.4, 31.7, 35.9, 43.4]},
+        {h: 135, s: [24.8, 26.7, 34.8, 39.6, 48.3]},
+        {h: 140, s: [27.1, 29.2, 38.3, 43.8, 53.8]}
+    ],
+    female: [
+        {h: 85,  s: [10.0, 10.5, 13.5, 14.5, 16.5]},
+        {h: 90,  s: [11.0, 11.7, 15.0, 16.2, 18.6]},
+        {h: 95,  s: [12.0, 12.9, 16.6, 18.0, 20.8]},
+        {h: 100, s: [13.1, 14.1, 18.3, 20.0, 23.2]},
+        {h: 105, s: [14.3, 15.4, 20.2, 22.2, 25.8]},
+        {h: 110, s: [15.6, 16.7, 22.3, 24.6, 28.7]},
+        {h: 115, s: [17.0, 18.1, 24.6, 27.2, 31.9]},
+        {h: 120, s: [18.5, 19.6, 27.1, 30.1, 35.5]},
+        {h: 125, s: [20.0, 21.2, 29.8, 33.3, 39.5]},
+        {h: 130, s: [21.5, 22.9, 32.8, 36.8, 43.9]},
+        {h: 135, s: [23.0, 24.7, 36.1, 40.6, 48.8]},
+        {h: 140, s: [24.5, 26.5, 39.7, 44.7, 54.2]}
+    ]
+};
+
+function createNaturalCubicSpline(x, y) {
+    const n = x.length;
+    const a = y.slice();
+    const h = [];
+    for (let i = 0; i < n - 1; i++) h.push(x[i + 1] - x[i]);
+    const alpha = [0];
+    for (let i = 1; i < n - 1; i++) {
+        alpha.push(3 / h[i] * (a[i + 1] - a[i]) - 3 / h[i - 1] * (a[i] - a[i - 1]));
+    }
+    const c = new Array(n).fill(0), l = new Array(n).fill(1), mu = new Array(n).fill(0), z = new Array(n).fill(0);
+    for (let i = 1; i < n - 1; i++) {
+        l[i] = 2 * (x[i + 1] - x[i - 1]) - h[i - 1] * mu[i - 1];
+        mu[i] = h[i] / l[i];
+        z[i] = (alpha[i] - h[i - 1] * z[i - 1]) / l[i];
+    }
+    const b = new Array(n).fill(0), d = new Array(n).fill(0);
+    for (let j = n - 2; j >= 0; j--) {
+        c[j] = z[j] - mu[j] * c[j + 1];
+        b[j] = (a[j + 1] - a[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3;
+        d[j] = (c[j + 1] - c[j]) / (3 * h[j]);
+    }
+    return function(xi) {
+        if (xi <= x[0]) return y[0];
+        if (xi >= x[n - 1]) return y[n - 1];
+        let i = 0;
+        while (i < n - 1 && xi >= x[i + 1]) i++;
+        const dx = xi - x[i];
+        return a[i] + b[i] * dx + c[i] * dx * dx + d[i] * dx * dx * dx;
+    };
+}
+
+// Generate 1cm resolution lookup table on startup
+const detailedWeightHeightTable = { male: {}, female: {} };
+['male', 'female'].forEach(gender => {
+    const data = weightHeightCriteriaData[gender];
+    const x = data.map(d => d.h);
+    
+    // Create splines for each SD curve
+    const splines = [0, 1, 2, 3, 4].map(sdIdx => {
+        const y = data.map(d => d.s[sdIdx]);
+        return createNaturalCubicSpline(x, y);
+    });
+    
+    for (let h = 85; h <= 140; h++) {
+        detailedWeightHeightTable[gender][h] = [
+            splines[0](h), splines[1](h), splines[2](h), splines[3](h), splines[4](h)
+        ];
+    }
+});
+
 function evaluateWeightForHeight(gender, height, weight) {
     if (height < 85 || height > 140) return 'ความสูงอยู่นอกตารางอ้างอิง (85-140 ซม.)';
-
-    const criteriaData = {
-        female: [
-            {h: 85,  s: [9.2,  10.0, 13.0, 14.0, 16.5]},
-            {h: 90,  s: [10.5, 11.2, 14.8, 16.0, 18.5]},
-            {h: 95,  s: [11.5, 12.5, 16.5, 18.0, 21.0]},
-            {h: 100, s: [12.8, 13.8, 18.0, 19.5, 23.0]},
-            {h: 105, s: [13.8, 14.8, 19.5, 21.2, 25.0]},
-            {h: 110, s: [15.0, 16.0, 21.0, 23.0, 27.5]},
-            {h: 115, s: [17.0, 18.0, 23.5, 26.0, 31.5]},
-            {h: 120, s: [19.2, 20.5, 27.0, 29.5, 36.5]},
-            {h: 125, s: [21.5, 23.2, 30.5, 33.5, 41.5]},
-            {h: 130, s: [24.5, 26.5, 35.0, 38.5, 48.0]},
-            {h: 135, s: [27.5, 30.0, 40.5, 44.5, 55.5]},
-            {h: 140, s: [31.5, 34.2, 47.0, 51.5, 64.0]}
-        ],
-        male: [
-            {h: 85,  s: [9.8,  10.5, 13.5, 14.8, 16.8]},
-            {h: 90,  s: [11.0, 11.8, 15.2, 16.5, 19.2]},
-            {h: 95,  s: [12.2, 13.0, 17.0, 18.5, 21.8]},
-            {h: 100, s: [13.2, 14.0, 18.5, 20.2, 24.0]},
-            {h: 105, s: [14.2, 15.0, 20.0, 21.8, 26.2]},
-            {h: 110, s: [15.2, 16.2, 21.5, 23.5, 28.5]},
-            {h: 115, s: [16.8, 17.8, 23.8, 25.8, 31.5]},
-            {h: 120, s: [18.5, 19.8, 26.2, 28.8, 35.0]},
-            {h: 125, s: [20.2, 21.5, 28.8, 31.5, 38.5]},
-            {h: 130, s: [22.2, 23.8, 31.8, 34.8, 42.5]},
-            {h: 135, s: [24.5, 26.2, 35.0, 38.5, 47.5]},
-            {h: 140, s: [26.8, 28.8, 39.0, 43.0, 53.0]}
-        ]
-    };
     
-    const data = criteriaData[gender];
-    let lower = data[0];
-    let upper = data[data.length - 1];
+    // Sub-centimeter precise calculation using the 1cm Lookup Table
+    const hFloor = Math.floor(height);
+    const hCeil = Math.ceil(height);
+    const table = detailedWeightHeightTable[gender];
     
-    for (let i = 0; i < data.length - 1; i++) {
-        if (height >= data[i].h && height <= data[i+1].h) {
-            lower = data[i];
-            upper = data[i+1];
-            break;
-        }
+    let cuts;
+    if (hFloor === hCeil) {
+        cuts = table[hFloor];
+    } else {
+        // Interpolate between the two closest 1cm points
+        const fraction = height - hFloor;
+        const cutsFloor = table[hFloor];
+        const cutsCeil = table[hCeil];
+        cuts = cutsFloor.map((val, idx) => val + fraction * (cutsCeil[idx] - val));
     }
     
-    // Interpolate points
-    const fraction = (height - lower.h) / (upper.h - lower.h || 1);
-    const cuts = lower.s.map((val, idx) => val + fraction * (upper.s[idx] - val));
-    
     // cuts[0]=-2SD, cuts[1]=-1.5SD, cuts[2]=+1.5SD, cuts[3]=+2SD, cuts[4]=+3SD
-    // แปลผลตามกราฟการเจริญเติบโต (สมุดสีชมพู กรมอนามัย)
+    // แปลผลตามกราฟการเจริญเติบโต กรมอนามัย พ.ศ. 2542 (คำนวณผ่าน Lookup Table แม่นยำ)
     if (weight < cuts[0]) return 'ผอม';              // < -2SD
     if (weight < cuts[1]) return 'ค่อนข้างผอม';      // -2SD ถึง -1.5SD
     if (weight <= cuts[2]) return 'สมส่วน';           // -1.5SD ถึง +1.5SD
@@ -94,6 +162,7 @@ function evaluateWeightForHeight(gender, height, weight) {
     if (weight <= cuts[4]) return 'เริ่มอ้วน';         // +2SD ถึง +3SD
     return 'อ้วน';                                    // > +3SD
 }
+
 
 function evaluateStepTest(value) {
     // value here is treated as HR recovery
