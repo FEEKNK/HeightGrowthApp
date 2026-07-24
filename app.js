@@ -183,7 +183,7 @@ function renderBDMSReport(user, results) {
                     <div class="bdms-info-row"><span class="bdms-info-label">วันที่ทดสอบ / Test Date:</span> <span class="bdms-info-val">${testDate}</span></div>
                     <div class="bdms-info-row"><span class="bdms-info-label">น้ำหนัก / Weight:</span> <span class="bdms-info-val">${user.weight} กก. / kg</span></div>
                     <div class="bdms-info-row"><span class="bdms-info-label">ส่วนสูง / Height:</span> <span class="bdms-info-val">${user.height} ซม. / cm</span></div>
-                    <div class="bdms-info-row" style="grid-column: span 2; margin-top: 4px; padding-top: 8px; border-top: 1px dashed #cbd5e1;"><span class="bdms-info-label" style="color:#4f46e5;">🎯 Target HR (64-77%):</span> <span class="bdms-info-val" style="color:#4f46e5; font-weight:600;">${targetMin} - ${targetMax} bpm</span></div>
+                    <div class="bdms-info-row" style="grid-column: span 2; margin-top: 4px; padding-top: 8px; border-top: 1px dashed #cbd5e1;"><span class="bdms-info-label" style="color:#4f46e5;">🎯 Target HR:</span> <span class="bdms-info-val" style="color:#4f46e5; font-weight:600;">${targetMin} - ${targetMax} bpm</span></div>
                 </div>
             </div>
         </div>
@@ -472,9 +472,9 @@ function generateVectorPDF() {
     const targetMax = targetData.max;
     const infoY3 = 71.5;
     doc.setTextColor(79, 70, 229); // #4f46e5 (Indigo)
-    doc.text('Target HR (64-77%):', marginX + 6, infoY3);
+    doc.text('Target HR:', marginX + 6, infoY3);
     doc.setFont('Kanit', 'bold');
-    doc.text(`${targetMin} - ${targetMax} bpm`, marginX + 37, infoY3);
+    doc.text(`${targetMin} - ${targetMax} bpm`, marginX + 24, infoY3);
     doc.setFont('Kanit', 'normal');
 
     // 3. Test Results Title & Table
