@@ -1,6 +1,5 @@
 // Test Configurations
 const testsGroup1 = [
-    { id: 'weight-for-height', name: 'น้ำหนักตามเกณฑ์ส่วนสูง', type: 'calculated', unit: '' },
     { id: 'single-leg-stance-open', name: 'Single Leg Stance (ลืมตา)', desc: 'ยืนทรงตัวขาเดียว ลืมตา', type: 'time', unit: 'วินาที' },
     { id: 'single-leg-stance-closed', name: 'Single Leg Stance (หลับตา)', desc: 'ยืนทรงตัวขาเดียว หลับตา', type: 'time', unit: 'วินาที' },
     { id: 'single-leg-hop', name: 'Single Leg Hop', desc: 'กระโดดขาเดียว', type: 'count', unit: 'ครั้ง' },
@@ -39,6 +38,17 @@ const btnDownloadPdf = document.getElementById('btn-download-pdf');
 const screenCriteria = document.getElementById('screen-criteria');
 const btnViewCriteria = document.getElementById('btn-view-criteria');
 const btnBackFromCriteria = document.getElementById('btn-back-from-criteria');
+
+// Screen 5 Elements (Backend / LocalStorage History)
+const screenHistory = document.getElementById('screen-history');
+const btnViewHistory = document.getElementById('btn-view-history');
+const btnBackFromHistory = document.getElementById('btn-back-from-history');
+const historyTableBody = document.getElementById('history-table-body');
+const historyStats = document.getElementById('history-stats');
+const btnExportCsv = document.getElementById('btn-export-csv');
+const btnClearHistory = document.getElementById('btn-clear-history');
+
+let summaryReturnScreen = null; // Track where summary screen should return to
 
 let currentReportDiv = null; // Store for PDF generation
 
@@ -220,16 +230,9 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
     // Collect results
     const results = [];
     
-    // Evaluate BMI or Weight-for-Height manually
+    // Evaluate BMI manually for Group 2
     if (currentUser.group === 1) {
-        // Group 1 doesn't use BMI, uses weight-for-height
-        const wfEval = evaluateWeightForHeight(currentUser.gender, currentUser.height, currentUser.weight);
-        results.push({
-            name: 'น้ำหนักตามเกณฑ์ส่วนสูง',
-            value: currentUser.weight,
-            unit: 'กก.',
-            evaluation: wfEval
-        });
+        // Group 1: No BMI / weight / height in test results table (already displayed in Personal Information)
         
         // Manual collection for single-leg-hop
         if (currentUser.age >= 6) {
@@ -337,6 +340,9 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
         });
     });
 
+    // Save assessment to browser cache (localStorage backend)
+    saveAssessmentToLocalStorage(currentUser, results);
+
     // Create BDMS report template
     const reportDiv = renderBDMSReport(currentUser, results);
     
@@ -346,11 +352,12 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
     summaryContainer.innerHTML = '';
     summaryContainer.appendChild(reportDiv);
     
+    summaryReturnScreen = screenDashboard;
     switchScreen(screenSummary);
 });
 
 btnBackToDashboard.addEventListener('click', () => {
-    switchScreen(screenDashboard);
+    switchScreen(summaryReturnScreen || screenDashboard);
 });
 
 btnDownloadPdf.addEventListener('click', () => {
@@ -528,12 +535,10 @@ function generateVectorPDF() {
                 // Group 1 pass/fail
                 if (text === 'ผ่าน') fillColor = [46, 125, 50]; // green
                 else if (text === 'ไม่ผ่าน') fillColor = [229, 57, 53]; // red
-                // Pink book weight-for-height categories
+                // BMI categories
                 else if (text === 'สมส่วน') fillColor = [46, 125, 50]; // green
-                else if (text === 'ค่อนข้างผอม') fillColor = [245, 158, 11]; // amber
-                else if (text === 'ผอม') fillColor = [229, 57, 53]; // red
+                else if (text === 'ผอม' || text === 'ผอมมาก') fillColor = [229, 57, 53]; // red
                 else if (text === 'ท้วม') fillColor = [245, 158, 11]; // amber
-                else if (text === 'เริ่มอ้วน') fillColor = [245, 158, 11]; // amber
                 else if (text === 'อ้วน') fillColor = [229, 57, 53]; // red
                 // Group 2 descriptive
                 else if (text.includes('ดีมาก')) fillColor = [46, 125, 50];
@@ -630,6 +635,15 @@ btnBackFromCriteria.addEventListener('click', () => {
     switchScreen(screenOnboarding);
 });
 
+btnViewHistory?.addEventListener('click', () => {
+    renderHistoryTable();
+    switchScreen(screenHistory);
+});
+
+btnBackFromHistory?.addEventListener('click', () => {
+    switchScreen(screenOnboarding);
+});
+
 // Functions
 function switchScreen(targetScreen) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -655,37 +669,18 @@ function setupDashboard() {
         const card = document.createElement('div');
         card.className = 'test-card';
         
-        if (test.id === 'bmi' || test.id === 'weight-for-height') {
-            const isBmi = test.id === 'bmi';
-            const displayVal = isBmi ? currentUser.bmi : `${currentUser.weight} กก.`;
-            
-            let evalResult = '-';
-            let gaugeLevels = [];
-            let activeIndex = -1;
+        if (test.id === 'bmi') {
+            const displayVal = currentUser.bmi;
+            const evalResult = evaluateBMI(currentUser.age, currentUser.gender, currentUser.bmi);
+            const gaugeLevels = [
+                { label: 'ผอมมาก', color: '#e53935' },
+                { label: 'ผอม', color: '#fb8c00' },
+                { label: 'สมส่วน', color: '#43a047' },
+                { label: 'ท้วม', color: '#fb8c00' },
+                { label: 'อ้วน', color: '#e53935' }
+            ];
 
-            if (isBmi) {
-                evalResult = evaluateBMI(currentUser.age, currentUser.gender, currentUser.bmi);
-                gaugeLevels = [
-                    { label: 'ผอมมาก', color: '#e53935' },
-                    { label: 'ผอม', color: '#fb8c00' },
-                    { label: 'สมส่วน', color: '#43a047' },
-                    { label: 'ท้วม', color: '#fb8c00' },
-                    { label: 'อ้วน', color: '#e53935' }
-                ];
-            } else {
-                evalResult = evaluateWeightForHeight(currentUser.gender, currentUser.height, currentUser.weight);
-                gaugeLevels = [
-                    { label: 'ผอม', color: '#e53935' },
-                    { label: 'ค่อนข้างผอม', color: '#fb8c00' },
-                    { label: 'สมส่วน', color: '#43a047' },
-                    { label: 'ท้วม', color: '#fb8c00' },
-                    { label: 'เริ่มอ้วน', color: '#e53935' },
-                    { label: 'อ้วน', color: '#d32f2f' }
-                ];
-            }
-
-            activeIndex = gaugeLevels.findIndex(l => l.label === evalResult);
-            
+            const activeIndex = gaugeLevels.findIndex(l => l.label === evalResult);
             const valColor = activeIndex >= 0 ? gaugeLevels[activeIndex].color : 'var(--primary)';
             
             let gaugeHtml = '';
@@ -714,7 +709,6 @@ function setupDashboard() {
                 </div>
                 <div style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 10px;">น้ำหนัก ${currentUser.weight} กก. / ส่วนสูง ${currentUser.height} ซม.</div>
                 ${gaugeHtml}
-                ${!isBmi ? `<button onclick="openChartModal('${currentUser.gender}', ${currentUser.height}, ${currentUser.weight})" style="margin-top: 15px; padding: 8px 12px; background: transparent; border: 1px solid var(--secondary); color: var(--secondary); border-radius: 8px; cursor: pointer; width: 100%; font-family: 'Kanit'; transition: background 0.3s;">📊 ดูกราฟเทียบเกณฑ์มาตรฐาน</button>` : ''}
             `;
         } else if (test.id === 'single-leg-hop') {
             if (currentUser.age >= 6) {
@@ -784,226 +778,125 @@ function setupDashboard() {
     });
 }
 
-// --- Chart Modal Logic ---
-let growthChartInstance = null;
+// --- Backend Storage (LocalStorage Cache) Functions ---
+const LOCAL_STORAGE_KEY = 'growthfit_backend_data';
 
-window.openChartModal = function(gender, currentHeight, currentWeight) {
-    const modal = document.getElementById('chart-modal');
-    modal.classList.add('show');
-    
-    const ctx = document.getElementById('growthChart').getContext('2d');
-    
-    if (growthChartInstance) {
-        growthChartInstance.destroy();
+function getBackendData() {
+    try {
+        const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+        return data ? JSON.parse(data) : [];
+    } catch (e) {
+        console.error('Error loading backend data:', e);
+        return [];
     }
-    
-    const data = weightHeightCriteriaData[gender];
-    
-    // Draw the chart using the exact mathematically smoothed 56 points (Natural Cubic Spline)
-    const detailedData = detailedWeightHeightTable[gender];
-    const heights = [];
-    for (let h = 85; h <= 140; h++) heights.push(h);
-    
-    const sdNeg2 = heights.map(h => ({x: h, y: detailedData[h][0]}));
-    const sdNeg1_5 = heights.map(h => ({x: h, y: detailedData[h][1]}));
-    const sdPos1_5 = heights.map(h => ({x: h, y: detailedData[h][2]}));
-    const sdPos2 = heights.map(h => ({x: h, y: detailedData[h][3]}));
-    const sdPos3 = heights.map(h => ({x: h, y: detailedData[h][4]}));
+}
 
-    // Helper to interpolate Y at given X
-    const getYAtX = (dataArr, targetX) => {
-        const point = dataArr.find(p => p.x === targetX);
-        if (point) return point.y;
-        const lower = dataArr.slice().reverse().find(p => p.x <= targetX) || dataArr[0];
-        const upper = dataArr.find(p => p.x >= targetX) || dataArr[dataArr.length - 1];
-        if (lower.x === upper.x) return lower.y;
-        return lower.y + (upper.y - lower.y) * ((targetX - lower.x) / (upper.x - lower.x));
+function saveAssessmentToLocalStorage(user, results) {
+    const records = getBackendData();
+    const record = {
+        id: Date.now().toString() + Math.random().toString(36).substring(2, 6),
+        timestamp: new Date().toISOString(),
+        dateStr: new Date().toLocaleString('th-TH'),
+        user: JSON.parse(JSON.stringify(user)),
+        results: JSON.parse(JSON.stringify(results))
     };
+    records.unshift(record);
+    try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(records));
+    } catch (e) {
+        console.error('Error saving backend data:', e);
+    }
+}
 
-    const zoneLabelPlugin = {
-        id: 'zoneLabels',
-        afterDraw: (chart) => {
-            const ctx = chart.ctx;
-            const xAxis = chart.scales.x;
-            const yAxis = chart.scales.y;
-            
-            ctx.save();
-            ctx.font = 'bold 12px Kanit';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            // Choose X position for labels (e.g. 135cm)
-            const targetX = 132.5; 
-            const xPixel = xAxis.getPixelForValue(targetX);
-            
-            const drawLabel = (text, arrTop, arrBottom, color, offsetY = 0) => {
-                const x1 = targetX - 5;
-                const x2 = targetX + 5;
-                
-                const yTop1 = arrTop ? getYAtX(arrTop, x1) : getYAtX(arrBottom, x1);
-                const yBottom1 = arrBottom ? getYAtX(arrBottom, x1) : getYAtX(arrTop, x1);
-                const py1 = yAxis.getPixelForValue((yTop1 + yBottom1) / 2);
-                
-                const yTop2 = arrTop ? getYAtX(arrTop, x2) : getYAtX(arrBottom, x2);
-                const yBottom2 = arrBottom ? getYAtX(arrBottom, x2) : getYAtX(arrTop, x2);
-                const py2 = yAxis.getPixelForValue((yTop2 + yBottom2) / 2);
-                
-                const px1 = xAxis.getPixelForValue(x1);
-                const px2 = xAxis.getPixelForValue(x2);
-                
-                const angle = Math.atan2(py2 - py1, px2 - px1);
-                
-                const yTop = arrTop ? getYAtX(arrTop, targetX) : getYAtX(arrBottom, targetX);
-                const yBottom = arrBottom ? getYAtX(arrBottom, targetX) : getYAtX(arrTop, targetX);
-                const yPixel = yAxis.getPixelForValue((yTop + yBottom) / 2) + offsetY;
-                
-                ctx.save();
-                ctx.translate(xPixel, yPixel);
-                ctx.rotate(angle);
-                
-                ctx.fillStyle = color;
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-                ctx.strokeText(text, 0, 0);
-                ctx.fillText(text, 0, 0);
-                
-                ctx.restore();
-            };
-            
-            drawLabel('อ้วน', null, sdPos3, '#4a148c', -12);
-            drawLabel('เริ่มอ้วน', sdPos3, sdPos2, '#c62828');
-            drawLabel('ท้วม', sdPos2, sdPos1_5, '#f57f17');
-            drawLabel('สมส่วน', sdPos1_5, sdNeg1_5, '#2e7d32');
-            drawLabel('ค่อนข้างผอม', sdNeg1_5, sdNeg2, '#2e7d32');
-            drawLabel('ผอม', sdNeg2, null, '#d84315', 12);
-            
-            ctx.restore();
-        }
-    };
+function renderHistoryTable() {
+    const records = getBackendData();
+    if (historyStats) {
+        historyStats.textContent = `จำนวนข้อมูลคัดกรองทั้งหมด: ${records.length} รายการ`;
+    }
+    if (!historyTableBody) return;
+    
+    if (records.length === 0) {
+        historyTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 25px; color: #64748b;">ยังไม่มีประวัติการบันทึกข้อมูลคัดกรองในระบบแคชของเบราว์เซอร์</td></tr>`;
+        return;
+    }
 
-    growthChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            datasets: [
-                {
-                    label: 'อ้วน (> +3 SD)',
-                    data: sdPos3,
-                    borderColor: '#000',
-                    borderWidth: 1,
-                    backgroundColor: 'rgba(180, 160, 200, 0.7)',
-                    fill: '-1',
-                    pointRadius: 0,
-                    tension: 0
-                },
-                {
-                    label: 'เริ่มอ้วน (+2 SD ถึง +3 SD)',
-                    data: sdPos2,
-                    borderColor: '#000',
-                    borderWidth: 1,
-                    backgroundColor: 'rgba(140, 200, 100, 0.7)',
-                    fill: '-1',
-                    pointRadius: 0,
-                    tension: 0
-                },
-                {
-                    label: 'ท้วม (+1.5 SD ถึง +2 SD)',
-                    data: sdPos1_5,
-                    borderColor: '#000',
-                    borderWidth: 1,
-                    backgroundColor: 'rgba(180, 220, 120, 0.7)',
-                    fill: '-1',
-                    pointRadius: 0,
-                    tension: 0
-                },
-                {
-                    label: 'สมส่วน (-1.5 SD ถึง +1.5 SD)',
-                    data: sdNeg1_5,
-                    borderColor: '#e53935',
-                    borderWidth: 1.5,
-                    borderDash: [5, 5],
-                    backgroundColor: 'rgba(255, 200, 120, 0.7)',
-                    fill: '-1',
-                    pointRadius: 0,
-                    tension: 0
-                },
-                {
-                    label: 'ค่อนข้างผอม (-2 SD ถึง -1.5 SD)',
-                    data: sdNeg2,
-                    borderColor: '#000',
-                    borderWidth: 1,
-                    backgroundColor: 'transparent',
-                    fill: false,
-                    pointRadius: 0,
-                    tension: 0
-                },
-                {
-                    label: 'จุดของคุณ',
-                    data: [{x: currentHeight, y: currentWeight}],
-                    backgroundColor: '#111',
-                    borderColor: '#fff',
-                    borderWidth: 2,
-                    pointRadius: 6,
-                    pointHoverRadius: 8,
-                    type: 'scatter',
-                    showLine: false
-                }
-            ]
-        },
-        plugins: [zoneLabelPlugin],
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { 
-                    display: true,
-                    position: 'bottom',
-                    labels: {
-                        font: { family: 'Kanit', size: 10 },
-                        boxWidth: 12,
-                        padding: 8
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            if (context.dataset.type === 'scatter') {
-                                return `น้ำหนัก ${context.raw.y} กก. (สูง ${context.raw.x} ซม.)`;
-                            }
-                            return `${context.dataset.label}: ${context.raw.y.toFixed(1)} กก.`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    type: 'linear',
-                    title: { display: true, text: 'ส่วนสูง (เซนติเมตร)' },
-                    min: 85,
-                    max: 140,
-                    ticks: { stepSize: 5 }
-                },
-                y: {
-                    title: { display: true, text: 'น้ำหนัก (กิโลกรัม)' },
-                    min: 9,
-                    max: Math.max(52, currentWeight ? Math.ceil(parseFloat(currentWeight)) + 2 : 52),
-                    ticks: { 
-                        stepSize: 1,
-                        autoSkip: false,
-                        font: { size: 9 }
-                    }
-                }
-            }
-        }
-    });
+    historyTableBody.innerHTML = records.map(rec => `
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+            <td style="padding: 10px; font-size: 0.9rem;">${rec.dateStr || '-'}</td>
+            <td style="padding: 10px; font-weight: 600; color: var(--primary);">${rec.user?.hn || '-'}</td>
+            <td style="padding: 10px;">${rec.user?.name || '-'}</td>
+            <td style="padding: 10px; text-align: center;">${rec.user?.age} ปี / ${rec.user?.gender === 'male' ? 'ชาย' : 'หญิง'}</td>
+            <td style="padding: 10px; text-align: center;"><span style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">กลุ่ม ${rec.user?.group || '-'}</span></td>
+            <td style="padding: 10px; text-align: center;">
+                <button onclick="viewHistoryRecord('${rec.id}')" class="btn-primary" style="background: #3b82f6; padding: 5px 10px; font-size: 0.8rem; margin: 2px; box-shadow: none; width: auto; display: inline-block;">👁️ ดูผล</button>
+                <button onclick="deleteHistoryRecord('${rec.id}')" class="btn-primary" style="background: #ef4444; padding: 5px 10px; font-size: 0.8rem; margin: 2px; box-shadow: none; width: auto; display: inline-block;">🗑️ ลบ</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.viewHistoryRecord = function(id) {
+    const records = getBackendData();
+    const record = records.find(r => r.id === id);
+    if (!record) return;
+
+    currentUser = record.user;
+    currentResults = record.results;
+    
+    const reportDiv = renderBDMSReport(currentUser, currentResults);
+    currentReportDiv = reportDiv;
+    summaryContainer.innerHTML = '';
+    summaryContainer.appendChild(reportDiv);
+    
+    summaryReturnScreen = screenHistory;
+    switchScreen(screenSummary);
 };
 
-document.getElementById('close-chart-modal')?.addEventListener('click', () => {
-    document.getElementById('chart-modal').classList.remove('show');
+window.deleteHistoryRecord = function(id) {
+    if (!confirm('ต้องการลบข้อมูลประวัติรายชื่อนี้ใช่หรือไม่?')) return;
+    let records = getBackendData();
+    records = records.filter(r => r.id !== id);
+    try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(records));
+        renderHistoryTable();
+    } catch (e) {
+        console.error('Error deleting record:', e);
+    }
+};
+
+btnExportCsv?.addEventListener('click', () => {
+    const records = getBackendData();
+    if (records.length === 0) {
+        alert('ไม่มีข้อมูลในระบบหลังบ้านสำหรับส่งออกครับ');
+        return;
+    }
+
+    let csv = "\uFEFF" + "ลำดับ,วันเวลาที่บันทึก,HN,ชื่อ-นามสกุล,เพศ,อายุ (ปี),กลุ่ม,น้ำหนัก (กก.),ส่วนสูง (ซม.),BMI\n";
+    records.forEach((r, idx) => {
+        const u = r.user || {};
+        const genderText = u.gender === 'male' ? 'ชาย' : 'หญิง';
+        csv += `"${idx + 1}","${r.dateStr || ''}","${u.hn || ''}","${u.name || ''}","${genderText}","${u.age || ''}","กลุ่มที่ ${u.group || ''}","${u.weight || ''}","${u.height || ''}","${u.bmi || '-'}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `GrowthFit_Backend_Data_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 });
 
-window.addEventListener('click', (e) => {
-    const modal = document.getElementById('chart-modal');
-    if (e.target === modal) {
-        modal.classList.remove('show');
+btnClearHistory?.addEventListener('click', () => {
+    const records = getBackendData();
+    if (records.length === 0) return;
+    if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลคัดกรองในแคชเบราว์เซอร์ทั้งหมด? (ไม่สามารถกู้คืนได้)')) return;
+    try {
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+        renderHistoryTable();
+    } catch (e) {
+        console.error('Error clearing storage:', e);
     }
 });
+

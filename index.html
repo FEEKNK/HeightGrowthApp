@@ -20,7 +20,10 @@
             <header class="app-header">
                 <h1>GrowthFit</h1>
                 <p>ระบบคัดกรองเตรียมความพร้อมออกกำลังกาย</p>
-                <button id="btn-view-criteria" class="btn-primary" type="button" style="margin-top: 15px; padding: 10px 16px; font-size: 0.95rem; background: var(--secondary); box-shadow: none;">ดูเกณฑ์มาตรฐาน</button>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
+                    <button id="btn-view-criteria" class="btn-primary" type="button" style="margin: 0; padding: 10px 16px; font-size: 0.95rem; background: var(--secondary); box-shadow: none; width: auto;">📋 ดูเกณฑ์มาตรฐาน</button>
+                    <button id="btn-view-history" class="btn-primary" type="button" style="margin: 0; padding: 10px 16px; font-size: 0.95rem; background: #3b82f6; box-shadow: none; width: auto;">🗄️ ข้อมูลหลังบ้าน</button>
+                </div>
             </header>
             
             <form id="onboarding-form" class="glass-card">
@@ -101,20 +104,6 @@
             
             <div class="glass-card" style="padding: 20px; overflow-y: auto; max-height: 70vh;">
                 <h2 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 15px;">กลุ่มที่ 1 (อายุ 4-6 ปี)</h2>
-                
-                <h3>น้ำหนักตามเกณฑ์ส่วนสูง</h3>
-                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">อ้างอิง: เกณฑ์การเจริญเติบโตของเด็กอายุ 2-7 ปี กรมอนามัย พ.ศ. 2542</p>
-                <table class="criteria-table">
-                    <tr><th rowspan="2">ส่วนสูง (ซม.)</th><th colspan="2">ช่วงน้ำหนักที่ "สมส่วน" (กก.)</th></tr>
-                    <tr><th style="font-size: 0.85em;">ชาย</th><th style="font-size: 0.85em;">หญิง</th></tr>
-                    <tr><td>90</td><td>11.8 - 15.0</td><td>11.2 - 14.5</td></tr>
-                    <tr><td>100</td><td>14.0 - 18.5</td><td>13.8 - 18.0</td></tr>
-                    <tr><td>110</td><td>16.2 - 21.5</td><td>16.0 - 21.5</td></tr>
-                    <tr><td>120</td><td>19.5 - 26.0</td><td>20.5 - 27.0</td></tr>
-                    <tr><td>130</td><td>24.0 - 32.0</td><td>26.5 - 35.0</td></tr>
-                    <tr><td>140</td><td>29.0 - 39.0</td><td>34.0 - 47.0</td></tr>
-                </table>
-                <br>
                 
                 <h3>ยืนทรงตัวขาเดียว (Single Leg Stance)</h3>
                 <p style="font-size: 0.9rem; color: #666; margin-bottom: 5px;"><b>Trials:</b> 2 ครั้งต่อข้าง | <b>Score:</b> เวลา balance</p>
@@ -282,24 +271,47 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Chart Modal -->
-    <div id="chart-modal" class="modal">
-        <div class="modal-content glass-card">
-            <span class="close-btn" id="close-chart-modal">&times;</span>
-            <h2 style="color: var(--primary); margin-bottom: 10px;">กราฟน้ำหนักตามเกณฑ์ส่วนสูง</h2>
-            <div style="position: relative; height: 450px; width: 100%;">
-                <canvas id="growthChart"></canvas>
+        <!-- Screen 5: History / Admin Backend (LocalStorage Cache) -->
+        <div id="screen-history" class="screen">
+            <header class="app-header" style="position: relative; padding-top: 10px;">
+                <button id="btn-back-from-history" class="btn-icon">ย้อนกลับ</button>
+                <h1 style="font-size: 1.8rem;">ข้อมูลหลังบ้าน (ประวัติการคัดกรอง)</h1>
+                <p style="margin-top: 5px;">บันทึกข้อมูลและดึงจากแคชเบราว์เซอร์ (Local Storage)</p>
+            </header>
+            
+            <div class="glass-card" style="padding: 20px; overflow-y: auto; max-height: 68vh;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <div id="history-stats" style="font-weight: 600; color: var(--primary); font-size: 1.05rem;">จำนวนข้อมูลคัดกรองทั้งหมด: 0 รายการ</div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button id="btn-export-csv" class="btn-primary" type="button" style="background: #10b981; padding: 8px 14px; font-size: 0.9rem; box-shadow: none; margin: 0; width: auto;">📊 ส่งออกไฟล์ CSV (Excel)</button>
+                        <button id="btn-clear-history" class="btn-primary" type="button" style="background: #ef4444; padding: 8px 14px; font-size: 0.9rem; box-shadow: none; margin: 0; width: auto;">🗑️ ล้างข้อมูลทั้งหมด</button>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="criteria-table" style="width: 100%; text-align: left; min-width: 650px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">วัน-เวลาที่บันทึก</th>
+                                <th style="text-align: left;">HN</th>
+                                <th style="text-align: left;">ชื่อ-นามสกุล</th>
+                                <th style="text-align: center;">อายุ / เพศ</th>
+                                <th style="text-align: center;">กลุ่ม</th>
+                                <th style="text-align: center; width: 160px;">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <p style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 10px;">อ้างอิงจากเกณฑ์การเจริญเติบโตของกรมอนามัย</p>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="kanit-font.js"></script>
     <script src="logo_data.js"></script>
     <script src="logo_b_data.js"></script>

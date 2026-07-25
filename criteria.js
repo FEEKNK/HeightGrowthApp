@@ -23,11 +23,6 @@ function evaluateResult(testId, age, gender, valueStr) {
     switch (testId) {
         case 'bmi':
             return evaluateBMI(age, gender, value);
-        case 'weight-for-height':
-            // value is actually weight, we need height from somewhere.
-            // But since evaluateResult only takes value, we have a problem.
-            // I will pass weight as value, and pass height in the valueStr if it's a string like "weight|height"
-            return '-'; // we will handle this in a separate case
         case 'step-test':
             return evaluateStepTest(value);
         case 'single-leg-hop':
@@ -48,121 +43,6 @@ function evaluateResult(testId, age, gender, valueStr) {
             return '-';
     }
 }
-
-// น้ำหนักตามเกณฑ์ส่วนสูง (Weight-for-Height)
-// อ้างอิง: การจัดทำเกณฑ์อ้างอิงการเจริญเติบโตของเด็กอายุ 2-7 ปี กรมอนามัย พ.ศ. 2542
-// s = [-2SD, -1.5SD, +1.5SD, +2SD, +3SD]
-// Zones: ผอม(<-2SD), ค่อนข้างผอม(-2SD~-1.5SD), สมส่วน(-1.5SD~+1.5SD), ท้วม(+1.5SD~+2SD), เริ่มอ้วน(+2SD~+3SD), อ้วน(>+3SD)
-const weightHeightCriteriaData = {
-    male: [
-        {h: 85,  s: [10.0, 10.5, 13.5, 14.5, 16.5]},
-        {h: 90,  s: [11.0, 11.6, 15.0, 16.2, 18.5]},
-        {h: 95,  s: [12.1, 12.8, 16.6, 18.0, 20.7]},
-        {h: 100, s: [13.3, 14.1, 18.3, 20.0, 23.1]},
-        {h: 105, s: [14.6, 15.5, 20.1, 22.1, 25.7]},
-        {h: 110, s: [16.0, 17.0, 22.0, 24.4, 28.5]},
-        {h: 115, s: [17.5, 18.6, 24.1, 26.9, 31.6]},
-        {h: 120, s: [19.1, 20.4, 26.4, 29.6, 35.1]},
-        {h: 125, s: [20.8, 22.3, 28.9, 32.6, 39.0]},
-        {h: 130, s: [22.7, 24.4, 31.7, 35.9, 43.4]},
-        {h: 135, s: [24.8, 26.7, 34.8, 39.6, 48.3]},
-        {h: 140, s: [27.1, 29.2, 38.3, 43.8, 53.8]}
-    ],
-    female: [
-        {h: 85,  s: [10.0, 10.5, 13.5, 14.5, 16.5]},
-        {h: 90,  s: [11.0, 11.7, 15.0, 16.2, 18.6]},
-        {h: 95,  s: [12.0, 12.9, 16.6, 18.0, 20.8]},
-        {h: 100, s: [13.1, 14.1, 18.3, 20.0, 23.2]},
-        {h: 105, s: [14.3, 15.4, 20.2, 22.2, 25.8]},
-        {h: 110, s: [15.6, 16.7, 22.3, 24.6, 28.7]},
-        {h: 115, s: [17.0, 18.1, 24.6, 27.2, 31.9]},
-        {h: 120, s: [18.5, 19.6, 27.1, 30.1, 35.5]},
-        {h: 125, s: [20.0, 21.2, 29.8, 33.3, 39.5]},
-        {h: 130, s: [21.5, 22.9, 32.8, 36.8, 43.9]},
-        {h: 135, s: [23.0, 24.7, 36.1, 40.6, 48.8]},
-        {h: 140, s: [24.5, 26.5, 39.7, 44.7, 54.2]}
-    ]
-};
-
-function createNaturalCubicSpline(x, y) {
-    const n = x.length;
-    const a = y.slice();
-    const h = [];
-    for (let i = 0; i < n - 1; i++) h.push(x[i + 1] - x[i]);
-    const alpha = [0];
-    for (let i = 1; i < n - 1; i++) {
-        alpha.push(3 / h[i] * (a[i + 1] - a[i]) - 3 / h[i - 1] * (a[i] - a[i - 1]));
-    }
-    const c = new Array(n).fill(0), l = new Array(n).fill(1), mu = new Array(n).fill(0), z = new Array(n).fill(0);
-    for (let i = 1; i < n - 1; i++) {
-        l[i] = 2 * (x[i + 1] - x[i - 1]) - h[i - 1] * mu[i - 1];
-        mu[i] = h[i] / l[i];
-        z[i] = (alpha[i] - h[i - 1] * z[i - 1]) / l[i];
-    }
-    const b = new Array(n).fill(0), d = new Array(n).fill(0);
-    for (let j = n - 2; j >= 0; j--) {
-        c[j] = z[j] - mu[j] * c[j + 1];
-        b[j] = (a[j + 1] - a[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3;
-        d[j] = (c[j + 1] - c[j]) / (3 * h[j]);
-    }
-    return function(xi) {
-        if (xi <= x[0]) return y[0];
-        if (xi >= x[n - 1]) return y[n - 1];
-        let i = 0;
-        while (i < n - 1 && xi >= x[i + 1]) i++;
-        const dx = xi - x[i];
-        return a[i] + b[i] * dx + c[i] * dx * dx + d[i] * dx * dx * dx;
-    };
-}
-
-// Generate 1cm resolution lookup table on startup
-const detailedWeightHeightTable = { male: {}, female: {} };
-['male', 'female'].forEach(gender => {
-    const data = weightHeightCriteriaData[gender];
-    const x = data.map(d => d.h);
-    
-    // Create splines for each SD curve
-    const splines = [0, 1, 2, 3, 4].map(sdIdx => {
-        const y = data.map(d => d.s[sdIdx]);
-        return createNaturalCubicSpline(x, y);
-    });
-    
-    for (let h = 85; h <= 140; h++) {
-        detailedWeightHeightTable[gender][h] = [
-            splines[0](h), splines[1](h), splines[2](h), splines[3](h), splines[4](h)
-        ];
-    }
-});
-
-function evaluateWeightForHeight(gender, height, weight) {
-    if (height < 85 || height > 140) return 'ความสูงอยู่นอกตารางอ้างอิง (85-140 ซม.)';
-    
-    // Sub-centimeter precise calculation using the 1cm Lookup Table
-    const hFloor = Math.floor(height);
-    const hCeil = Math.ceil(height);
-    const table = detailedWeightHeightTable[gender];
-    
-    let cuts;
-    if (hFloor === hCeil) {
-        cuts = table[hFloor];
-    } else {
-        // Interpolate between the two closest 1cm points
-        const fraction = height - hFloor;
-        const cutsFloor = table[hFloor];
-        const cutsCeil = table[hCeil];
-        cuts = cutsFloor.map((val, idx) => val + fraction * (cutsCeil[idx] - val));
-    }
-    
-    // cuts[0]=-2SD, cuts[1]=-1.5SD, cuts[2]=+1.5SD, cuts[3]=+2SD, cuts[4]=+3SD
-    // แปลผลตามกราฟการเจริญเติบโต กรมอนามัย พ.ศ. 2542 (คำนวณผ่าน Lookup Table แม่นยำ)
-    if (weight < cuts[0]) return 'ผอม';              // < -2SD
-    if (weight < cuts[1]) return 'ค่อนข้างผอม';      // -2SD ถึง -1.5SD
-    if (weight <= cuts[2]) return 'สมส่วน';           // -1.5SD ถึง +1.5SD
-    if (weight <= cuts[3]) return 'ท้วม';             // +1.5SD ถึง +2SD
-    if (weight <= cuts[4]) return 'เริ่มอ้วน';         // +2SD ถึง +3SD
-    return 'อ้วน';                                    // > +3SD
-}
-
 
 function evaluateStepTest(value) {
     // value here is treated as HR recovery
