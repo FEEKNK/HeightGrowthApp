@@ -70,6 +70,8 @@ onboardingForm.addEventListener('submit', (e) => {
     const age = parseInt(document.getElementById('age').value);
     const weight = parseFloat(document.getElementById('weight').value);
     const height = parseFloat(document.getElementById('height').value);
+    const hr = document.getElementById('hr').value || '-';
+    const bp = document.getElementById('bp').value || '-';
     
     const bmi = calculateBMI(weight, height);
     
@@ -82,8 +84,7 @@ onboardingForm.addEventListener('submit', (e) => {
         alert('ระบบนี้ถูกออกแบบมาสำหรับเด็กอายุระหว่าง 4 - 14 ปี เท่านั้นครับ');
         return;
     }
-    
-    currentUser = { hn, name, gender, age, weight, height, bmi, group };
+    currentUser = { hn, name, gender, age, weight, height, bmi, group, hr, bp };
     
     setupDashboard();
     switchScreen(screenDashboard);
@@ -193,7 +194,9 @@ function renderBDMSReport(user, results) {
                     <div class="bdms-info-row"><span class="bdms-info-label">วันที่ทดสอบ / Test Date:</span> <span class="bdms-info-val">${testDate}</span></div>
                     <div class="bdms-info-row"><span class="bdms-info-label">น้ำหนัก / Weight:</span> <span class="bdms-info-val">${user.weight} กก. / kg</span></div>
                     <div class="bdms-info-row"><span class="bdms-info-label">ส่วนสูง / Height:</span> <span class="bdms-info-val">${user.height} ซม. / cm</span></div>
-                    <div class="bdms-info-row" style="grid-column: span 2; margin-top: 4px; padding-top: 8px; border-top: 1px dashed #cbd5e1;"><span class="bdms-info-label" style="color:#4f46e5;">🎯 Target HR:</span> <span class="bdms-info-val" style="color:#4f46e5; font-weight:600;">${targetMin} - ${targetMax} bpm</span></div>
+                    <div class="bdms-info-row" style="margin-top: 4px; padding-top: 8px; border-top: 1px dashed #cbd5e1;"><span class="bdms-info-label" style="color:#4f46e5;">🎯 Target HR:</span> <span class="bdms-info-val" style="color:#4f46e5; font-weight:600;">${targetMin} - ${targetMax} bpm</span></div>
+                    <div class="bdms-info-row" style="margin-top: 4px; padding-top: 8px; border-top: 1px dashed #cbd5e1;"><span class="bdms-info-label" style="color:#4f46e5;">❤️ HR:</span> <span class="bdms-info-val">${user.hr || '-'} bpm</span></div>
+                    <div class="bdms-info-row" style="margin-top: 4px; padding-top: 8px; border-top: 1px dashed #cbd5e1;"><span class="bdms-info-label" style="color:#4f46e5;">🩸 BP:</span> <span class="bdms-info-val">${user.bp || '-'} mmHg</span></div>
                 </div>
             </div>
         </div>
@@ -473,7 +476,7 @@ function generateVectorPDF() {
     doc.setTextColor(100, 116, 139); doc.text('วันที่ทดสอบ / Test Date:', marginX + 130, infoY2);
     doc.setTextColor(15, 23, 42); doc.text(`${testDate}`, marginX + 164, infoY2);
 
-    // Row 3 (Target HR)
+    // Row 3 (Target HR, HR, BP)
     const targetData = targetHRTable[currentUser.age] || { min: '-', max: '-' };
     const targetMin = targetData.min;
     const targetMax = targetData.max;
@@ -483,6 +486,12 @@ function generateVectorPDF() {
     doc.setFont('Kanit', 'bold');
     doc.text(`${targetMin} - ${targetMax} bpm`, marginX + 24, infoY3);
     doc.setFont('Kanit', 'normal');
+
+    doc.setTextColor(100, 116, 139); doc.text('HR:', marginX + 66, infoY3);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.hr || '-'} bpm`, marginX + 74, infoY3);
+
+    doc.setTextColor(100, 116, 139); doc.text('BP:', marginX + 130, infoY3);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.bp || '-'} mmHg`, marginX + 138, infoY3);
 
     // 3. Test Results Title & Table
     doc.setFontSize(10.5);
