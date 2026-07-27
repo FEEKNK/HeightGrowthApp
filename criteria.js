@@ -148,7 +148,7 @@ function evaluateShuttleRun(age, gender, value) {
     };
     
     const range = criteria[gender][key];
-    if (value < range[0]) return 'สูงกว่ามาตรฐาน';
+    if (value < range[0]) return 'ดีกว่ามาตรฐาน';
     if (value <= range[1]) return 'อยู่ในเกณฑ์มาตรฐาน';
     return 'ต่ำกว่ามาตรฐาน';
 }
@@ -169,7 +169,7 @@ function evaluateHandgrip(age, gender, value) {
     const range = criteria[gender][key];
     if (value < range[0]) return 'ต่ำกว่ามาตรฐาน';
     if (value <= range[1]) return 'อยู่ในเกณฑ์มาตรฐาน';
-    return 'สูงกว่ามาตรฐาน';
+    return 'ดีกว่ามาตรฐาน';
 }
 
 function evaluateSingleLegStance(age, gender, value, condition) {
@@ -201,7 +201,7 @@ function evaluateSingleLegStance(age, gender, value, condition) {
     }
     if (value < range[0]) return 'ต่ำกว่ามาตรฐาน';
     if (value <= range[1]) return 'อยู่ในเกณฑ์มาตรฐาน';
-    return 'สูงกว่ามาตรฐาน';
+    return 'ดีกว่ามาตรฐาน';
 }
 
 function evaluateStandingLongJump(age, gender, value) {
@@ -213,8 +213,7 @@ function evaluateStandingLongJump(age, gender, value) {
         else avg = gender === 'male' ? 185 : 160;
         
         if (value < avg) return 'ต่ำกว่าค่าเฉลี่ย';
-        if (value === avg) return 'อยู่ในเกณฑ์ค่าเฉลี่ย';
-        return 'สูงกว่าค่าเฉลี่ย';
+        if (value >= avg) return 'ผ่านเกณฑ์/สูงกว่าค่าเฉลี่ย';
     } else if (age >= 4 && age <= 6) {
         // Group 1 → ผ่าน/ไม่ผ่าน
         let min;
