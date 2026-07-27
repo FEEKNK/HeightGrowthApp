@@ -241,7 +241,7 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
     if (currentUser.group === 1) {
         // Group 1: Age-specific Pass/Fail tests
         const ageTests = testsGroup1.filter(t => t.age === currentUser.age);
-        let allFilled = true;
+
         
         ageTests.forEach(t => {
             const radios = document.getElementsByName(`res-${t.id}`);
@@ -249,7 +249,6 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
             for (let r of radios) {
                 if (r.checked) val = r.value;
             }
-            if (!val) allFilled = false;
             
             results.push({
                 name: t.name,
@@ -258,11 +257,7 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
                 evaluation: val || '-'
             });
         });
-        
-        if (!allFilled) {
-            alert('กรุณาเลือกผลการทดสอบให้ครบทุกข้อ (ผ่าน/ไม่ผ่าน)');
-            return;
-        }
+
     } else {
         const bmiEval = evaluateResult('bmi', currentUser.age, currentUser.gender, currentUser.bmi);
         results.push({
