@@ -1,9 +1,13 @@
 // Test Configurations
 const testsGroup1 = [
-    { id: 'single-leg-stance-open', name: 'Single Leg Stance (ลืมตา)', desc: 'ยืนทรงตัวขาเดียว ลืมตา', type: 'time', unit: 'วินาที' },
-    { id: 'single-leg-stance-closed', name: 'Single Leg Stance (หลับตา)', desc: 'ยืนทรงตัวขาเดียว หลับตา', type: 'time', unit: 'วินาที' },
-    { id: 'single-leg-hop', name: 'Single Leg Hop', desc: 'กระโดดขาเดียว', type: 'count', unit: 'ครั้ง' },
-    { id: 'standing-long-jump', name: 'Standing Long Jump', desc: 'กระโดดไกลอยู่กับที่', type: 'distance', unit: 'ซม.' }
+    { id: 'g1-bal-4', age: 4, name: 'Balance on one foot 2 seconds', desc: 'ยืนทรงตัวบนขาเดียว (4 ปี)', type: 'passfail', unit: 'ผ่าน/ไม่ผ่าน' },
+    { id: 'g1-gal-4', age: 4, name: 'Gallops jumping', desc: 'ก้าวกระโดดถ่ายน้ำหนัก (4 ปี)', type: 'passfail', unit: 'ผ่าน/ไม่ผ่าน' },
+    { id: 'g1-bal-5', age: 5, name: 'Balance on one foot 3-5 seconds', desc: 'ยืนทรงตัวบนขาเดียว (5 ปี)', type: 'passfail', unit: 'ผ่าน/ไม่ผ่าน' },
+    { id: 'g1-hop-5', age: 5, name: 'Hops 8-10 times from same foot', desc: 'กระโดดขาเดียว (5 ปี)', type: 'passfail', unit: 'ผ่าน/ไม่ผ่าน' },
+    { id: 'g1-cat-5', age: 5, name: 'Catches ball using hand only', desc: 'รับลูกบอลด้วยมือ (5 ปี)', type: 'passfail', unit: 'ผ่าน/ไม่ผ่าน' },
+    { id: 'g1-rot-5', age: 5, name: 'Body rotate when throw/catch', desc: 'หมุนลำตัวโยน/รับบอล (5 ปี)', type: 'passfail', unit: 'ผ่าน/ไม่ผ่าน' },
+    { id: 'g1-jmp-6', age: 6, name: 'Jump over knee high cord feet together', desc: 'กระโดดข้ามระดับเข่าเท้าคู่ (6 ปี)', type: 'passfail', unit: 'ผ่าน/ไม่ผ่าน' },
+    { id: 'g1-cat-6', age: 6, name: 'One handed catches ball from bounce', desc: 'รับบอลกระดอนมือเดียว (6 ปี)', type: 'passfail', unit: 'ผ่าน/ไม่ผ่าน' }
 ];
 
 const testsGroup2 = [
@@ -235,63 +239,29 @@ document.getElementById('btn-submit-tests').addEventListener('click', () => {
     
     // Evaluate BMI manually for Group 2
     if (currentUser.group === 1) {
-        // Group 1: No BMI / weight / height in test results table (already displayed in Personal Information)
+        // Group 1: Age-specific Pass/Fail tests
+        const ageTests = testsGroup1.filter(t => t.age === currentUser.age);
+        let allFilled = true;
         
-        // Manual collection for single-leg-hop
-        if (currentUser.age >= 6) {
-            const hopRadios = document.getElementsByName('hop-result');
-            const hopCountInput = document.getElementById('hop-count');
-            const hopCountStr = (hopCountInput && hopCountInput.value !== '') ? `${hopCountInput.value} ครั้ง` : '';
+        ageTests.forEach(t => {
+            const radios = document.getElementsByName(`res-${t.id}`);
+            let val = '';
+            for (let r of radios) {
+                if (r.checked) val = r.value;
+            }
+            if (!val) allFilled = false;
             
-            if (hopRadios.length > 0) {
-                let hopVal = '-';
-                let hopEval = '-';
-                for (let r of hopRadios) {
-                    if (r.checked) {
-                        if (r.value === 'pass') {
-                            hopVal = currentUser.age === 6 ? 'ต่อเนื่องและมีระยะ' : 'คล่อง 10+ ครั้งและมีระยะ';
-                            hopEval = 'ผ่าน';
-                        } else {
-                            hopVal = 'ไม่ผ่านตามเกณฑ์ท่าทาง';
-                            hopEval = 'ไม่ผ่าน';
-                        }
-                        break;
-                    }
-                }
-                
-                if (hopVal !== '-' || hopCountStr !== '') {
-                    let finalVal = '';
-                    if (hopCountStr && hopVal !== '-') finalVal = `${hopCountStr} (${hopVal})`;
-                    else if (hopCountStr) finalVal = hopCountStr;
-                    else finalVal = hopVal;
-                    
-                    results.push({
-                        name: 'Single Leg Hop',
-                        value: finalVal || '-',
-                        unit: '',
-                        evaluation: hopEval
-                    });
-                }
-            }
-        } else {
-            const hopInput = document.getElementById('hop-count');
-            if (hopInput && hopInput.value !== '') {
-                const hopVal = hopInput.value;
-                const hopEval = evaluateSingleLegHop(currentUser.age, parseInt(hopVal) || 0);
-                results.push({
-                    name: 'Single Leg Hop',
-                    value: hopVal,
-                    unit: 'ครั้ง',
-                    evaluation: hopEval
-                });
-            } else if (hopInput) {
-                 results.push({
-                    name: 'Single Leg Hop',
-                    value: '-',
-                    unit: 'ครั้ง',
-                    evaluation: '-'
-                });
-            }
+            results.push({
+                name: t.name,
+                value: val || '-',
+                unit: '',
+                evaluation: val || '-'
+            });
+        });
+        
+        if (!allFilled) {
+            alert('กรุณาเลือกผลการทดสอบให้ครบทุกข้อ (ผ่าน/ไม่ผ่าน)');
+            return;
         }
     } else {
         const bmiEval = evaluateResult('bmi', currentUser.age, currentUser.gender, currentUser.bmi);
@@ -669,7 +639,7 @@ function setupDashboard() {
     document.getElementById('display-group').textContent = `อายุ ${currentUser.age} ปี (กลุ่ม ${currentUser.group}) | Target HR: ${targetMin}-${targetMax} bpm`;
     
     // Choose Test List
-    const tests = currentUser.group === 1 ? testsGroup1 : testsGroup2;
+    const tests = currentUser.group === 1 ? testsGroup1.filter(t => t.age === currentUser.age) : testsGroup2;
     
     // Render Test Cards
     testListContainer.innerHTML = '';
@@ -768,6 +738,21 @@ function setupDashboard() {
                         <label style="font-size: 0.8rem; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">HR Recovery (พัก 1 นาที)</label>
                         <input type="number" id="step-hr-recovery" placeholder="bpm" style="width: 100%; padding: 8px 10px; border: 1.5px solid var(--primary); border-radius: 6px; box-sizing: border-box;">
                     </div>
+                </div>
+            `;
+        } else if (test.type === 'passfail') {
+            card.innerHTML = `
+                <div class="test-header">
+                    <div class="test-title">${test.name}</div>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 5px;">${test.desc}</div>
+                <div style="display: flex; gap: 20px; margin-top: 10px;">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.95rem;">
+                        <input type="radio" name="res-${test.id}" value="ผ่าน" style="width: 18px; height: 18px;"> ผ่าน
+                    </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.95rem;">
+                        <input type="radio" name="res-${test.id}" value="ไม่ผ่าน" style="width: 18px; height: 18px;"> ไม่ผ่าน
+                    </label>
                 </div>
             `;
         } else {
