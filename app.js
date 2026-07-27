@@ -511,15 +511,16 @@ function generateVectorPDF() {
                 else if (text === 'ไม่ผ่าน') fillColor = [229, 57, 53]; // red
                 // BMI categories
                 else if (text === 'สมส่วน') fillColor = [46, 125, 50]; // green
-                else if (text === 'ผอม' || text === 'ผอมมาก') fillColor = [229, 57, 53]; // red
+                else if (text === 'ผอม') fillColor = [245, 158, 11]; // amber
+                else if (text === 'ผอมมาก') fillColor = [229, 57, 53]; // red
                 else if (text === 'ท้วม') fillColor = [245, 158, 11]; // amber
                 else if (text === 'อ้วน') fillColor = [229, 57, 53]; // red
                 // Group 2 descriptive
-                else if (text.includes('ดีมาก')) fillColor = [46, 125, 50];
-                else if (text.includes('ต่ำมาก')) fillColor = [229, 57, 53];
-                else if (text.includes('ปานกลาง')) fillColor = [255, 179, 0];
-                else if (text.includes('ต่ำ') || text.includes('ควรพัฒนา')) fillColor = [239, 68, 68];
-                else if (text.includes('ดี') || text.includes('ผ่านเกณฑ์') || text.includes('อยู่ในเกณฑ์')) fillColor = [2, 132, 199];
+                else if (text.includes('ดีมาก') || text.includes('สูงกว่า')) fillColor = [46, 125, 50]; // green
+                else if (text.includes('ต่ำมาก')) fillColor = [229, 57, 53]; // red
+                else if (text.includes('ปานกลาง')) fillColor = [245, 158, 11]; // amber
+                else if (text.includes('ต่ำ') || text.includes('ควรพัฒนา')) fillColor = [229, 57, 53]; // red
+                else if (text.includes('ดี') || text.includes('ผ่านเกณฑ์') || text.includes('อยู่ในเกณฑ์')) fillColor = [2, 132, 199]; // blue
 
                 const badgeWidth = Math.min(38, cell.width - 6);
                 const badgeHeight = 7;
