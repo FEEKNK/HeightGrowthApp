@@ -205,23 +205,26 @@ function evaluateSingleLegStance(age, gender, value, condition) {
 }
 
 function evaluateStandingLongJump(age, gender, value) {
-    if (age >= 7 && age <= 14) {
-        let avg;
-        if (age <= 9) avg = gender === 'male' ? 125 : 120;
-        else if (age <= 11) avg = gender === 'male' ? 140 : 132;
-        else if (age <= 13) avg = gender === 'male' ? 158 : 150;
-        else avg = gender === 'male' ? 185 : 160;
-        
-        if (value < avg) return 'ต่ำกว่าค่าเฉลี่ย';
-        if (value >= avg) return 'ผ่านเกณฑ์/สูงกว่าค่าเฉลี่ย';
-    } else if (age >= 4 && age <= 6) {
-        // Group 1 → ผ่าน/ไม่ผ่าน
-        let min;
-        if (age === 4) min = 60;
-        else if (age === 5) min = 75;
-        else min = 90;
-        return value >= min ? 'ผ่าน' : 'ไม่ผ่าน';
-    }
+    const table = {
+        male: {
+            6: 110, 7: 118, 8: 128, 9: 136, 10: 143, 11: 147,
+            12: 162, 13: 175, 14: 186, 15: 195, 16: 202, 17: 207
+        },
+        female: {
+            6: 103, 7: 112, 8: 120, 9: 128, 10: 134, 11: 140,
+            12: 144, 13: 147, 14: 150, 15: 152, 16: 154, 17: 155
+        }
+    };
     
-    return '-';
+    // Fallback to closest age if out of bounds (though usually 7-14)
+    let checkAge = age;
+    if (checkAge < 6) checkAge = 6;
+    if (checkAge > 17) checkAge = 17;
+    
+    const avg = table[gender][checkAge];
+    if (!avg) return '-';
+    
+    if (value < avg) return 'ต่ำกว่าค่าเฉลี่ย';
+    if (value === avg) return 'อยู่ในเกณฑ์ค่าเฉลี่ย';
+    return 'สูงกว่าค่าเฉลี่ย';
 }
