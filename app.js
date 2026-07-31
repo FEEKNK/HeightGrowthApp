@@ -108,14 +108,14 @@ function getBadgeClass(evaluation) {
     if (text === 'ผ่าน') return 'excellent';
     if (text === 'ไม่ผ่าน') return 'low';
 
+    // BMI
     if (text === 'สมส่วน') return 'excellent';
-    if (text === 'ค่อนข้างผอม') return 'moderate';
-    if (text === 'ผอม') return 'low';
+    if (text === 'ผอม') return 'moderate';
+    if (text === 'ผอมมาก') return 'verylow';
     if (text === 'ท้วม') return 'moderate';
-    if (text === 'เริ่มอ้วน') return 'moderate';
     if (text === 'อ้วน') return 'low';
 
-    if (text.includes('ดีมาก') || text.includes('Excellent')) return 'excellent';
+    if (text.includes('ดีมาก') || text.includes('Excellent') || text.includes('สูงกว่า')) return 'excellent';
     if (text.includes('ต่ำมาก') || text.includes('Very Low')) return 'verylow';
     if (text.includes('ปานกลาง') || text.includes('Moderate')) return 'moderate';
     if (text.includes('ต่ำ') || text.includes('ควรพัฒนา') || text.includes('ควรปรับปรุง') || text.includes('ไม่ผ่านเกณฑ์')) return 'low';
