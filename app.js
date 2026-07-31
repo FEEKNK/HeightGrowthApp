@@ -69,7 +69,6 @@ onboardingForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
     const hn = document.getElementById('hn').value;
-    const name = document.getElementById('child-name').value;
     const gender = document.querySelector('input[name="gender"]:checked').value;
     const age = parseInt(document.getElementById('age').value);
     const weight = parseFloat(document.getElementById('weight').value);
@@ -90,7 +89,7 @@ onboardingForm.addEventListener('submit', (e) => {
         alert('ระบบนี้ถูกออกแบบมาสำหรับเด็กอายุระหว่าง 4 - 14 ปี เท่านั้นครับ');
         return;
     }
-    currentUser = { hn, company, name, gender, age, weight, height, bmi, group, hr, bp };
+    currentUser = { hn, company, gender, age, weight, height, bmi, group, hr, bp };
     
     setupDashboard();
     switchScreen(screenDashboard);
@@ -631,7 +630,7 @@ function setupDashboard() {
     const targetMax = targetData.max;
 
     // Update Header
-    document.getElementById('display-name').textContent = `${currentUser.hn} - ${currentUser.name}`;
+    document.getElementById('display-name').textContent = `HN: ${currentUser.hn}`;
     document.getElementById('display-group').textContent = `อายุ ${currentUser.age} ปี (กลุ่ม ${currentUser.group}) | Target HR: ${targetMin}-${targetMax} bpm`;
     
     // Choose Test List
@@ -815,7 +814,6 @@ function renderHistoryTable() {
             <td style="padding: 10px; font-size: 0.9rem;">${rec.dateStr || '-'}</td>
             <td style="padding: 10px; font-weight: 600; color: var(--primary);">${rec.user?.hn || '-'}</td>
             <td style="padding: 10px;">${rec.user?.company || '-'}</td>
-            <td style="padding: 10px;">${rec.user?.name || '-'}</td>
             <td style="padding: 10px; text-align: center;">${rec.user?.age} ปี / ${rec.user?.gender === 'male' ? 'ชาย' : 'หญิง'}</td>
             <td style="padding: 10px; text-align: center;"><span style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">กลุ่ม ${rec.user?.group || '-'}</span></td>
             <td style="padding: 10px; text-align: center;">
@@ -862,11 +860,11 @@ btnExportCsv?.addEventListener('click', () => {
         return;
     }
 
-    let csv = "\uFEFF" + "ลำดับ,วันเวลาที่บันทึก,HN,บริษัท,ชื่อ-นามสกุล,เพศ,อายุ (ปี),กลุ่ม,น้ำหนัก (กก.),ส่วนสูง (ซม.),BMI\n";
+    let csv = "\uFEFF" + "ลำดับ,วันเวลาที่บันทึก,HN,บริษัท,เพศ,อายุ (ปี),กลุ่ม,น้ำหนัก (กก.),ส่วนสูง (ซม.),BMI\n";
     records.forEach((r, idx) => {
         const u = r.user || {};
         const genderText = u.gender === 'male' ? 'ชาย' : 'หญิง';
-        csv += `"${idx + 1}","${r.dateStr || ''}","${u.hn || ''}","${u.company || ''}","${u.name || ''}","${genderText}","${u.age || ''}","กลุ่มที่ ${u.group || ''}","${u.weight || ''}","${u.height || ''}","${u.bmi || '-'}"\n`;
+        csv += `"${idx + 1}","${r.dateStr || ''}","${u.hn || ''}","${u.company || ''}","${genderText}","${u.age || ''}","กลุ่มที่ ${u.group || ''}","${u.weight || ''}","${u.height || ''}","${u.bmi || '-'}"\n`;
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
