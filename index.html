@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,13 +9,14 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="background-shapes">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
         <div class="shape shape-3"></div>
     </div>
-    
+
     <div class="app-container">
         <!-- Screen 1: Onboarding -->
         <div id="screen-onboarding" class="screen active">
@@ -22,11 +24,15 @@
                 <h1>GrowthFit</h1>
                 <p>ระบบคัดกรองเตรียมความพร้อมออกกำลังกาย</p>
                 <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
-                    <button id="btn-view-criteria" class="btn-primary" type="button" style="margin: 0; padding: 10px 16px; font-size: 0.95rem; background: var(--secondary); box-shadow: none; width: auto;">📋 ดูเกณฑ์มาตรฐาน</button>
-                    <button id="btn-view-history" class="btn-primary" type="button" style="margin: 0; padding: 10px 16px; font-size: 0.95rem; background: #3b82f6; box-shadow: none; width: auto;">🗄️ ข้อมูลหลังบ้าน</button>
+                    <button id="btn-view-criteria" class="btn-primary" type="button"
+                        style="margin: 0; padding: 10px 16px; font-size: 0.95rem; background: var(--secondary); box-shadow: none; width: auto;">📋
+                        ดูเกณฑ์มาตรฐาน</button>
+                    <button id="btn-view-history" class="btn-primary" type="button"
+                        style="margin: 0; padding: 10px 16px; font-size: 0.95rem; background: #3b82f6; box-shadow: none; width: auto;">🗄️
+                        ข้อมูลหลังบ้าน</button>
                 </div>
             </header>
-            
+
             <form id="onboarding-form" class="glass-card">
                 <div class="form-group">
                     <label for="hn">HN (Hospital Number)</label>
@@ -34,11 +40,13 @@
                 </div>
                 <div class="form-group">
                     <label for="company-select">บริษัท / Company</label>
-                    <select id="company-select" required onchange="document.getElementById('company-other').style.display = this.value === 'other' ? 'block' : 'none'; if(this.value === 'other') document.getElementById('company-other').setAttribute('required', 'true'); else document.getElementById('company-other').removeAttribute('required');">
+                    <select id="company-select" required
+                        onchange="document.getElementById('company-other').style.display = this.value === 'other' ? 'block' : 'none'; if(this.value === 'other') document.getElementById('company-other').setAttribute('required', 'true'); else document.getElementById('company-other').removeAttribute('required');">
                         <option value="รพ.กรุงเทพสิริโรจน์">รพ.กรุงเทพสิริโรจน์</option>
                         <option value="other">อื่นๆ (โปรดระบุ)</option>
                     </select>
-                    <input type="text" id="company-other" placeholder="ระบุชื่อบริษัท" style="display: none; margin-top: 10px;">
+                    <input type="text" id="company-other" placeholder="ระบุชื่อบริษัท"
+                        style="display: none; margin-top: 10px;">
                 </div>
 
                 <div class="form-group">
@@ -46,7 +54,7 @@
                     <div class="gender-selector">
                         <input type="radio" id="gender-male" name="gender" value="male" required>
                         <label for="gender-male" class="gender-btn male-btn">ชาย</label>
-                        
+
                         <input type="radio" id="gender-female" name="gender" value="female" required>
                         <label for="gender-female" class="gender-btn female-btn">หญิง</label>
                     </div>
@@ -89,11 +97,11 @@
                     <span class="badge" id="display-group">อายุ 5 ปี (กลุ่ม 1)</span>
                 </div>
             </header>
-            
+
             <div id="test-list" class="test-list">
                 <!-- Test items will be injected here via JS -->
             </div>
-            
+
             <button id="btn-submit-tests" class="btn-primary mt-20">ประมวลผลลัพธ์</button>
         </div>
 
@@ -103,12 +111,13 @@
                 <button id="btn-back-to-dashboard" class="btn-icon">ย้อนกลับ</button>
                 <h1>สรุปผลการประเมิน</h1>
             </header>
-            
+
             <div id="summary-container" class="glass-card" style="padding: 20px; overflow-x: auto;">
                 <!-- Summary table will be injected here via JS -->
             </div>
-            
-            <button id="btn-download-pdf" class="btn-primary mt-20" style="background: linear-gradient(135deg, #2a9d8f 0%, #21867a 100%);">ดาวน์โหลด PDF</button>
+
+            <button id="btn-download-pdf" class="btn-primary mt-20"
+                style="background: linear-gradient(135deg, #2a9d8f 0%, #21867a 100%);">ดาวน์โหลด PDF</button>
         </div>
 
         <!-- Screen 4: Criteria -->
@@ -117,123 +126,290 @@
                 <button id="btn-back-from-criteria" class="btn-icon">ย้อนกลับ</button>
                 <h1 style="font-size: 1.8rem;">เกณฑ์มาตรฐาน</h1>
             </header>
-            
+
             <div class="glass-card" style="padding: 20px; overflow-y: auto; max-height: 70vh;">
-                <div style="margin-bottom: 25px; padding: 15px; background: #f8fafc; border-radius: 10px; border-left: 4px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                    <h3 style="margin-bottom: 12px; font-size: 1.05rem; color: #334155;">ความหมายของสีที่ใช้ประเมินผล</h3>
+                <div
+                    style="margin-bottom: 25px; padding: 15px; background: #f8fafc; border-radius: 10px; border-left: 4px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 style="margin-bottom: 12px; font-size: 1.05rem; color: #334155;">ความหมายของสีที่ใช้ประเมินผล
+                    </h3>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="display: inline-block; width: 14px; height: 14px; background: #2e7d32; border-radius: 3px;"></span>
-                            <span style="font-size: 0.9rem; color: #475569;"><b>เขียว:</b> ดีมาก / ผ่านเกณฑ์ / สมส่วน</span>
+                            <span
+                                style="display: inline-block; width: 14px; height: 14px; background: #2e7d32; border-radius: 3px;"></span>
+                            <span style="font-size: 0.9rem; color: #475569;"><b>เขียว:</b> ดีมาก / ผ่านเกณฑ์ /
+                                สมส่วน</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="display: inline-block; width: 14px; height: 14px; background: #0284c7; border-radius: 3px;"></span>
+                            <span
+                                style="display: inline-block; width: 14px; height: 14px; background: #0284c7; border-radius: 3px;"></span>
                             <span style="font-size: 0.9rem; color: #475569;"><b>ฟ้า:</b> ดี / ตามเกณฑ์ทั่วไป</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="display: inline-block; width: 14px; height: 14px; background: #ffb300; border-radius: 3px;"></span>
+                            <span
+                                style="display: inline-block; width: 14px; height: 14px; background: #ffb300; border-radius: 3px;"></span>
                             <span style="font-size: 0.9rem; color: #475569;"><b>เหลือง:</b> ปานกลาง / ท้วม / ผอม</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="display: inline-block; width: 14px; height: 14px; background: #ef4444; border-radius: 3px;"></span>
-                            <span style="font-size: 0.9rem; color: #475569;"><b>แดง:</b> ต่ำ / ไม่ผ่าน / ควรพัฒนา / อ้วน</span>
+                            <span
+                                style="display: inline-block; width: 14px; height: 14px; background: #ef4444; border-radius: 3px;"></span>
+                            <span style="font-size: 0.9rem; color: #475569;"><b>แดง:</b> ต่ำ / ไม่ผ่าน / ควรพัฒนา /
+                                อ้วน</span>
                         </div>
                     </div>
                 </div>
 
-                <h2 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 15px;">กลุ่มที่ 1 (อายุ 4-6 ปี)</h2>
-                
-                <p style="font-size: 0.95rem; color: #64748b; margin-bottom: 15px;">* การประเมินสำหรับกลุ่มนี้ พิจารณาจาก <b>ผ่าน (Pass)</b> และ <b>ไม่ผ่าน (Fail)</b> ตามพัฒนาการของแต่ละช่วงวัย</p>
+                <h2
+                    style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 15px;">
+                    กลุ่มที่ 1 (อายุ 4-6 ปี)</h2>
+
+                <p style="font-size: 0.95rem; color: #64748b; margin-bottom: 15px;">* การประเมินสำหรับกลุ่มนี้
+                    พิจารณาจาก <b>ผ่าน (Pass)</b> และ <b>ไม่ผ่าน (Fail)</b> ตามพัฒนาการของแต่ละช่วงวัย</p>
 
                 <h3>อายุ 4 ปี</h3>
                 <table class="criteria-table">
-                    <tr><th style="width: 35%">รายการทดสอบ</th><th>รายละเอียดการตรวจ</th></tr>
-                    <tr><td><b>Balance on one foot 2 seconds</b></td><td>เด็กสามารถยืนทรงตัวบนขาเพียงข้างเดียวได้นานประมาณ 2 วินาที โดยไม่ล้ม</td></tr>
-                    <tr><td><b>Gallops jumping</b></td><td>เด็กสามารถเคลื่อนที่แบบก้าวกระโดด (gallop) โดยใช้เท้าข้างหนึ่งนำ และถ่ายน้ำหนักตัวไปข้างหน้าอย่างต่อเนื่อง นุ่มนวล และสม่ำเสมอ</td></tr>
+                    <tr>
+                        <th style="width: 35%">รายการทดสอบ</th>
+                        <th>รายละเอียดการตรวจ</th>
+                    </tr>
+                    <tr>
+                        <td><b>Balance on one foot 2 seconds</b></td>
+                        <td>เด็กสามารถยืนทรงตัวบนขาเพียงข้างเดียวได้นานประมาณ 2 วินาที โดยไม่ล้ม</td>
+                    </tr>
+                    <tr>
+                        <td><b>Gallops jumping</b></td>
+                        <td>เด็กสามารถเคลื่อนที่แบบก้าวกระโดด (gallop) โดยใช้เท้าข้างหนึ่งนำ
+                            และถ่ายน้ำหนักตัวไปข้างหน้าอย่างต่อเนื่อง นุ่มนวล และสม่ำเสมอ</td>
+                    </tr>
                 </table>
                 <br>
 
                 <h3>อายุ 5 ปี</h3>
                 <table class="criteria-table">
-                    <tr><th style="width: 35%">รายการทดสอบ</th><th>รายละเอียดการตรวจ</th></tr>
-                    <tr><td><b>Balance on one foot 3-5 seconds</b></td><td>เด็กสามารถยืนทรงตัวบนขาเพียงข้างเดียวได้นานประมาณ 3-5 วินาที โดยไม่เสียการทรงตัว</td></tr>
-                    <tr><td><b>Hops 8-10 times from same foot</b></td><td>เด็กสามารถกระโดดขาเดียว (hopping) ต่อเนื่องได้ 8-10 ครั้ง โดยใช้เท้าเดิมข้างเดียวตลอด</td></tr>
-                    <tr><td><b>Catches ball using hand only</b></td><td>เด็กสามารถรับลูกบอลโดยใช้ "มือ" เท่านั้น โดยไม่ใช้แขน ลำตัว หรือกอดลูกบอลช่วยพยุง</td></tr>
-                    <tr><td><b>Body rotate when throw/catch</b></td><td>เด็กสามารถหมุนลำตัว (rotation of trunk) เพื่อช่วยในการโยนลูกบอลด้วยสองมือ หรือช่วยในการรับลูกบอลหลังจากกระดอนพื้นได้</td></tr>
+                    <tr>
+                        <th style="width: 35%">รายการทดสอบ</th>
+                        <th>รายละเอียดการตรวจ</th>
+                    </tr>
+                    <tr>
+                        <td><b>Balance on one foot 3-5 seconds</b></td>
+                        <td>เด็กสามารถยืนทรงตัวบนขาเพียงข้างเดียวได้นานประมาณ 3-5 วินาที โดยไม่เสียการทรงตัว</td>
+                    </tr>
+                    <tr>
+                        <td><b>Hops 8-10 times from same foot</b></td>
+                        <td>เด็กสามารถกระโดดขาเดียว (hopping) ต่อเนื่องได้ 8-10 ครั้ง โดยใช้เท้าเดิมข้างเดียวตลอด</td>
+                    </tr>
+                    <tr>
+                        <td><b>Catches ball using hand only</b></td>
+                        <td>เด็กสามารถรับลูกบอลโดยใช้ "มือ" เท่านั้น โดยไม่ใช้แขน ลำตัว หรือกอดลูกบอลช่วยพยุง</td>
+                    </tr>
+                    <tr>
+                        <td><b>Body rotate when throw/catch</b></td>
+                        <td>เด็กสามารถหมุนลำตัว (rotation of trunk) เพื่อช่วยในการโยนลูกบอลด้วยสองมือ
+                            หรือช่วยในการรับลูกบอลหลังจากกระดอนพื้นได้</td>
+                    </tr>
                 </table>
                 <br>
 
                 <h3>อายุ 6 ปี</h3>
                 <table class="criteria-table">
-                    <tr><th style="width: 35%">รายการทดสอบ</th><th>รายละเอียดการตรวจ</th></tr>
-                    <tr><td><b>Jump over knee high cord feet together</b></td><td>เด็กสามารถกระโดดระดับสูงประมาณเข่า โดยใช้เท้าทั้งสองข้างกระโดดพร้อมกัน (feet together)</td></tr>
-                    <tr><td><b>One handed catches ball from bounce</b></td><td>เด็กสามารถใช้มือข้างเดียวรับลูกบอลหลังจากที่ลูกบอลกระดอนพื้น (bounce) แล้วได้</td></tr>
+                    <tr>
+                        <th style="width: 35%">รายการทดสอบ</th>
+                        <th>รายละเอียดการตรวจ</th>
+                    </tr>
+                    <tr>
+                        <td><b>Jump over knee high cord feet together</b></td>
+                        <td>เด็กสามารถกระโดดระดับสูงประมาณเข่า โดยใช้เท้าทั้งสองข้างกระโดดพร้อมกัน (feet together)</td>
+                    </tr>
+                    <tr>
+                        <td><b>One handed catches ball from bounce</b></td>
+                        <td>เด็กสามารถใช้มือข้างเดียวรับลูกบอลหลังจากที่ลูกบอลกระดอนพื้น (bounce) แล้วได้</td>
+                    </tr>
                 </table>
                 <br>
-                
+
                 <!-- Group 2 -->
-                <h2 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 15px; margin-top: 30px;">กลุ่มที่ 2 (อายุ 7-14 ปี)</h2>
-                
+                <h2
+                    style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 15px; margin-top: 30px;">
+                    กลุ่มที่ 2 (อายุ 7-14 ปี)</h2>
+
                 <h3>BMI (ดัชนีมวลกาย)</h3>
                 <table class="criteria-table">
-                    <tr><th>ระดับ</th><th>ความหมาย</th></tr>
-                    <tr><td>ต่ำกว่าเกณฑ์มาก</td><td>ผอมมาก</td></tr>
-                    <tr><td>ต่ำกว่าเกณฑ์</td><td>ผอม</td></tr>
-                    <tr><td>ตามเกณฑ์</td><td>สมส่วน</td></tr>
-                    <tr><td>สูงกว่าเกณฑ์</td><td>ท้วม</td></tr>
-                    <tr><td>สูงกว่าเกณฑ์มาก</td><td>อ้วน</td></tr>
+                    <tr>
+                        <th>ระดับ</th>
+                        <th>ความหมาย</th>
+                    </tr>
+                    <tr>
+                        <td>ต่ำกว่าเกณฑ์มาก</td>
+                        <td>ผอมมาก</td>
+                    </tr>
+                    <tr>
+                        <td>ต่ำกว่าเกณฑ์</td>
+                        <td>ผอม</td>
+                    </tr>
+                    <tr>
+                        <td>ตามเกณฑ์</td>
+                        <td>สมส่วน</td>
+                    </tr>
+                    <tr>
+                        <td>สูงกว่าเกณฑ์</td>
+                        <td>ท้วม</td>
+                    </tr>
+                    <tr>
+                        <td>สูงกว่าเกณฑ์มาก</td>
+                        <td>อ้วน</td>
+                    </tr>
                 </table>
                 <br>
 
                 <h3>ทดสอบก้าวขึ้น-ลง 3 นาที (3 Min Step Test)</h3>
-                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">คำนวณจากการลดลงของ HR: (นำ HR Peak ลบด้วย HR Recovery 1 นาที)</p>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">คำนวณจากการลดลงของ HR: (นำ HR Peak
+                    ลบด้วย HR Recovery 1 นาที)</p>
                 <table class="criteria-table">
-                    <tr><th>ระดับ</th><th>เกณฑ์การแปลผล</th></tr>
-                    <tr><td>ดีมาก</td><td>HR ลดลง &ge; 30 bpm</td></tr>
-                    <tr><td>ดี</td><td>HR ลดลง 20–29 bpm</td></tr>
-                    <tr><td>ปานกลาง</td><td>HR ลดลง 10–19 bpm</td></tr>
-                    <tr><td>ต่ำ</td><td>HR ลดลง &lt; 10 bpm</td></tr>
+                    <tr>
+                        <th>ระดับ</th>
+                        <th>เกณฑ์การแปลผล</th>
+                    </tr>
+                    <tr>
+                        <td>ดีมาก</td>
+                        <td>HR ลดลง &ge; 30 bpm</td>
+                    </tr>
+                    <tr>
+                        <td>ดี</td>
+                        <td>HR ลดลง 20–29 bpm</td>
+                    </tr>
+                    <tr>
+                        <td>ปานกลาง</td>
+                        <td>HR ลดลง 10–19 bpm</td>
+                    </tr>
+                    <tr>
+                        <td>ต่ำ</td>
+                        <td>HR ลดลง &lt; 10 bpm</td>
+                    </tr>
                 </table>
                 <br>
 
                 <h3>วิ่งแคล่วคล่องว่องไว 10x5 เมตร (10x5m Shuttle Run)</h3>
                 <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">*ค่าน้อย = ดี</p>
                 <table class="criteria-table">
-                    <tr><th>อายุ (ปี)</th><th>ชาย (วินาที)</th><th>หญิง (วินาที)</th></tr>
-                    <tr><td>6-7 ปี</td><td>21.5 - 26.0</td><td>22.5 - 27.5</td></tr>
-                    <tr><td>8-9 ปี</td><td>19.0 - 22.0</td><td>20.0 - 23.5</td></tr>
-                    <tr><td>10-11 ปี</td><td>17.5 - 19.5</td><td>18.5 - 20.5</td></tr>
-                    <tr><td>12-13 ปี</td><td>16.0 - 18.0</td><td>17.5 - 19.5</td></tr>
-                    <tr><td>14-15 ปี</td><td>14.5 - 16.5</td><td>16.5 - 18.5</td></tr>
+                    <tr>
+                        <th>อายุ (ปี)</th>
+                        <th>ชาย (วินาที)</th>
+                        <th>หญิง (วินาที)</th>
+                    </tr>
+                    <tr>
+                        <td>6-7 ปี</td>
+                        <td>21.5 - 26.0</td>
+                        <td>22.5 - 27.5</td>
+                    </tr>
+                    <tr>
+                        <td>8-9 ปี</td>
+                        <td>19.0 - 22.0</td>
+                        <td>20.0 - 23.5</td>
+                    </tr>
+                    <tr>
+                        <td>10-11 ปี</td>
+                        <td>17.5 - 19.5</td>
+                        <td>18.5 - 20.5</td>
+                    </tr>
+                    <tr>
+                        <td>12-13 ปี</td>
+                        <td>16.0 - 18.0</td>
+                        <td>17.5 - 19.5</td>
+                    </tr>
+                    <tr>
+                        <td>14-15 ปี</td>
+                        <td>14.5 - 16.5</td>
+                        <td>16.5 - 18.5</td>
+                    </tr>
                 </table>
                 <br>
 
                 <h3>กระโดดไกลอยู่กับที่ (Standing Long Jump)</h3>
                 <table class="criteria-table">
-                    <tr><th>อายุ (ปี)</th><th>ชาย (ซม.)</th><th>หญิง (ซม.)</th></tr>
-                    <tr><td>7 ปี</td><td>118</td><td>112</td></tr>
-                    <tr><td>8 ปี</td><td>128</td><td>120</td></tr>
-                    <tr><td>9 ปี</td><td>136</td><td>128</td></tr>
-                    <tr><td>10 ปี</td><td>143</td><td>134</td></tr>
-                    <tr><td>11 ปี</td><td>147</td><td>140</td></tr>
-                    <tr><td>12 ปี</td><td>162</td><td>144</td></tr>
-                    <tr><td>13 ปี</td><td>175</td><td>147</td></tr>
-                    <tr><td>14 ปี</td><td>186</td><td>150</td></tr>
+                    <tr>
+                        <th>อายุ (ปี)</th>
+                        <th>ชาย (ซม.)</th>
+                        <th>หญิง (ซม.)</th>
+                    </tr>
+                    <tr>
+                        <td>7 ปี</td>
+                        <td>118</td>
+                        <td>112</td>
+                    </tr>
+                    <tr>
+                        <td>8 ปี</td>
+                        <td>128</td>
+                        <td>120</td>
+                    </tr>
+                    <tr>
+                        <td>9 ปี</td>
+                        <td>136</td>
+                        <td>128</td>
+                    </tr>
+                    <tr>
+                        <td>10 ปี</td>
+                        <td>143</td>
+                        <td>134</td>
+                    </tr>
+                    <tr>
+                        <td>11 ปี</td>
+                        <td>147</td>
+                        <td>140</td>
+                    </tr>
+                    <tr>
+                        <td>12 ปี</td>
+                        <td>162</td>
+                        <td>144</td>
+                    </tr>
+                    <tr>
+                        <td>13 ปี</td>
+                        <td>175</td>
+                        <td>147</td>
+                    </tr>
+                    <tr>
+                        <td>14 ปี</td>
+                        <td>186</td>
+                        <td>150</td>
+                    </tr>
                 </table>
-                <p style="font-size: 0.85rem; color: #666; margin-top: 5px; margin-bottom: 10px;">* น้อยกว่าตาราง = ต่ำกว่าเฉลี่ย, เท่ากับตาราง = ตามเกณฑ์, มากกว่าตาราง = สูงกว่าเฉลี่ย</p>
+                <p style="font-size: 0.85rem; color: #666; margin-top: 5px; margin-bottom: 10px;">* น้อยกว่าตาราง =
+                    ต่ำกว่าเฉลี่ย, เท่ากับตาราง = ตามเกณฑ์, มากกว่าตาราง = สูงกว่าเฉลี่ย</p>
                 <br>
 
                 <h3>แรงบีบมือ (Hand Grip Strength)</h3>
                 <table class="criteria-table">
-                    <tr><th>อายุ (ปี)</th><th>ชาย (กก.)</th><th>หญิง (กก.)</th></tr>
-                    <tr><td>6-7 ปี</td><td>7.5 - 13.0</td><td>7.0 - 11.5</td></tr>
-                    <tr><td>8-9 ปี</td><td>11.0 - 17.5</td><td>10.0 - 16.5</td></tr>
-                    <tr><td>10-11 ปี</td><td>15.5 - 22.5</td><td>14.5 - 21.5</td></tr>
-                    <tr><td>12-13 ปี</td><td>19.5 - 31.0</td><td>17.5 - 24.5</td></tr>
-                    <tr><td>14-15 ปี</td><td>28.5 - 44.0</td><td>20.0 - 27.5</td></tr>
+                    <tr>
+                        <th>อายุ (ปี)</th>
+                        <th>ชาย (กก.)</th>
+                        <th>หญิง (กก.)</th>
+                    </tr>
+                    <tr>
+                        <td>6-7 ปี</td>
+                        <td>7.5 - 13.0</td>
+                        <td>7.0 - 11.5</td>
+                    </tr>
+                    <tr>
+                        <td>8-9 ปี</td>
+                        <td>11.0 - 17.5</td>
+                        <td>10.0 - 16.5</td>
+                    </tr>
+                    <tr>
+                        <td>10-11 ปี</td>
+                        <td>15.5 - 22.5</td>
+                        <td>14.5 - 21.5</td>
+                    </tr>
+                    <tr>
+                        <td>12-13 ปี</td>
+                        <td>19.5 - 31.0</td>
+                        <td>17.5 - 24.5</td>
+                    </tr>
+                    <tr>
+                        <td>14-15 ปี</td>
+                        <td>28.5 - 44.0</td>
+                        <td>20.0 - 27.5</td>
+                    </tr>
                 </table>
                 <br>
-                
+
                 <h3>ยืนทรงตัวขาเดียว (Single Leg Stance)</h3>
                 <table class="criteria-table">
                     <tr>
@@ -247,40 +423,206 @@
                         <th style="font-size: 0.85em;">ชาย</th>
                         <th style="font-size: 0.85em;">หญิง</th>
                     </tr>
-                    <tr><td>7 ปี</td><td>18 - 25</td><td>20 - 28</td><td>4 - 7</td><td>5 - 8</td></tr>
-                    <tr><td>8 ปี</td><td>25 - 30</td><td>28 - 33</td><td>6 - 10</td><td>7 - 11</td></tr>
-                    <tr><td>9 ปี</td><td>32 - 40</td><td>35 - 45</td><td>9 - 13</td><td>10 - 14</td></tr>
-                    <tr><td>10-11 ปี</td><td>50 - 60+</td><td>60+</td><td>10 - 15</td><td>12 - 18</td></tr>
-                    <tr><td>12-13 ปี</td><td>60+</td><td>60+</td><td>14 - 20</td><td>15 - 22</td></tr>
-                    <tr><td>14-15 ปี</td><td>60+</td><td>60+</td><td>20 - 25</td><td>20 - 25</td></tr>
+                    <tr>
+                        <td>7 ปี</td>
+                        <td>18 - 25</td>
+                        <td>20 - 28</td>
+                        <td>4 - 7</td>
+                        <td>5 - 8</td>
+                    </tr>
+                    <tr>
+                        <td>8 ปี</td>
+                        <td>25 - 30</td>
+                        <td>28 - 33</td>
+                        <td>6 - 10</td>
+                        <td>7 - 11</td>
+                    </tr>
+                    <tr>
+                        <td>9 ปี</td>
+                        <td>32 - 40</td>
+                        <td>35 - 45</td>
+                        <td>9 - 13</td>
+                        <td>10 - 14</td>
+                    </tr>
+                    <tr>
+                        <td>10-11 ปี</td>
+                        <td>50 - 60+</td>
+                        <td>60+</td>
+                        <td>10 - 15</td>
+                        <td>12 - 18</td>
+                    </tr>
+                    <tr>
+                        <td>12-13 ปี</td>
+                        <td>60+</td>
+                        <td>60+</td>
+                        <td>14 - 20</td>
+                        <td>15 - 22</td>
+                    </tr>
+                    <tr>
+                        <td>14-15 ปี</td>
+                        <td>60+</td>
+                        <td>60+</td>
+                        <td>20 - 25</td>
+                        <td>20 - 25</td>
+                    </tr>
                 </table>
                 <br>
 
                 <h3>นั่งงอตัวไปข้างหน้า (Sit & Reach) - หน่วยเป็น ซม.</h3>
-                <p style="font-size: 0.95rem; font-weight: bold; color: var(--primary); margin-top: 15px; margin-bottom: 5px;">ชาย</p>
+                <p
+                    style="font-size: 0.95rem; font-weight: bold; color: var(--primary); margin-top: 15px; margin-bottom: 5px;">
+                    ชาย</p>
                 <table class="criteria-table">
-                    <tr><th>อายุ (ปี)</th><th>ต่ำมาก</th><th>ต่ำ</th><th>ปานกลาง</th><th>ดี</th><th>ดีมาก</th></tr>
-                    <tr><td>7</td><td>0 ลงมา</td><td>1 - 3</td><td>4 - 6</td><td>7 - 10</td><td>11 ขึ้นไป</td></tr>
-                    <tr><td>8</td><td>1 ลงมา</td><td>2 - 4</td><td>5 - 7</td><td>8 - 10</td><td>11 ขึ้นไป</td></tr>
-                    <tr><td>9</td><td>1 ลงมา</td><td>2 - 5</td><td>6 - 8</td><td>9 - 11</td><td>12 ขึ้นไป</td></tr>
-                    <tr><td>10</td><td>3 ลงมา</td><td>4 - 7</td><td>8 - 12</td><td>13 - 16</td><td>17 ขึ้นไป</td></tr>
-                    <tr><td>11</td><td>4 ลงมา</td><td>5 - 9</td><td>10 - 14</td><td>15 - 18</td><td>19 ขึ้นไป</td></tr>
-                    <tr><td>12</td><td>4 ลงมา</td><td>5 - 9</td><td>10 - 14</td><td>15 - 19</td><td>20 ขึ้นไป</td></tr>
-                    <tr><td>13</td><td>5 ลงมา</td><td>6 - 10</td><td>11 - 15</td><td>16 - 20</td><td>21 ขึ้นไป</td></tr>
-                    <tr><td>14</td><td>5 ลงมา</td><td>6 - 11</td><td>12 - 16</td><td>17 - 22</td><td>23 ขึ้นไป</td></tr>
+                    <tr>
+                        <th>อายุ (ปี)</th>
+                        <th>ต่ำมาก</th>
+                        <th>ต่ำ</th>
+                        <th>ปานกลาง</th>
+                        <th>ดี</th>
+                        <th>ดีมาก</th>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>0 ลงมา</td>
+                        <td>1 - 3</td>
+                        <td>4 - 6</td>
+                        <td>7 - 10</td>
+                        <td>11 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>1 ลงมา</td>
+                        <td>2 - 4</td>
+                        <td>5 - 7</td>
+                        <td>8 - 10</td>
+                        <td>11 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>1 ลงมา</td>
+                        <td>2 - 5</td>
+                        <td>6 - 8</td>
+                        <td>9 - 11</td>
+                        <td>12 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>3 ลงมา</td>
+                        <td>4 - 7</td>
+                        <td>8 - 12</td>
+                        <td>13 - 16</td>
+                        <td>17 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>4 ลงมา</td>
+                        <td>5 - 9</td>
+                        <td>10 - 14</td>
+                        <td>15 - 18</td>
+                        <td>19 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>4 ลงมา</td>
+                        <td>5 - 9</td>
+                        <td>10 - 14</td>
+                        <td>15 - 19</td>
+                        <td>20 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>5 ลงมา</td>
+                        <td>6 - 10</td>
+                        <td>11 - 15</td>
+                        <td>16 - 20</td>
+                        <td>21 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>5 ลงมา</td>
+                        <td>6 - 11</td>
+                        <td>12 - 16</td>
+                        <td>17 - 22</td>
+                        <td>23 ขึ้นไป</td>
+                    </tr>
                 </table>
 
-                <p style="font-size: 0.95rem; font-weight: bold; color: var(--primary); margin-top: 15px; margin-bottom: 5px;">หญิง</p>
+                <p
+                    style="font-size: 0.95rem; font-weight: bold; color: var(--primary); margin-top: 15px; margin-bottom: 5px;">
+                    หญิง</p>
                 <table class="criteria-table">
-                    <tr><th>อายุ (ปี)</th><th>ต่ำมาก</th><th>ต่ำ</th><th>ปานกลาง</th><th>ดี</th><th>ดีมาก</th></tr>
-                    <tr><td>7</td><td>0 ลงมา</td><td>1 - 4</td><td>5 - 8</td><td>9 - 12</td><td>13 ขึ้นไป</td></tr>
-                    <tr><td>8</td><td>1 ลงมา</td><td>2 - 4</td><td>5 - 8</td><td>9 - 12</td><td>13 ขึ้นไป</td></tr>
-                    <tr><td>9</td><td>1 ลงมา</td><td>2 - 5</td><td>6 - 9</td><td>10 - 14</td><td>15 ขึ้นไป</td></tr>
-                    <tr><td>10</td><td>4 ลงมา</td><td>5 - 9</td><td>10 - 14</td><td>15 - 18</td><td>19 ขึ้นไป</td></tr>
-                    <tr><td>11</td><td>4 ลงมา</td><td>5 - 10</td><td>11 - 15</td><td>16 - 20</td><td>21 ขึ้นไป</td></tr>
-                    <tr><td>12</td><td>5 ลงมา</td><td>6 - 10</td><td>11 - 15</td><td>16 - 20</td><td>21 ขึ้นไป</td></tr>
-                    <tr><td>13</td><td>5 ลงมา</td><td>6 - 11</td><td>12 - 16</td><td>17 - 22</td><td>23 ขึ้นไป</td></tr>
-                    <tr><td>14</td><td>7 ลงมา</td><td>8 - 13</td><td>14 - 18</td><td>19 - 23</td><td>24 ขึ้นไป</td></tr>
+                    <tr>
+                        <th>อายุ (ปี)</th>
+                        <th>ต่ำมาก</th>
+                        <th>ต่ำ</th>
+                        <th>ปานกลาง</th>
+                        <th>ดี</th>
+                        <th>ดีมาก</th>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>0 ลงมา</td>
+                        <td>1 - 4</td>
+                        <td>5 - 8</td>
+                        <td>9 - 12</td>
+                        <td>13 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>1 ลงมา</td>
+                        <td>2 - 4</td>
+                        <td>5 - 8</td>
+                        <td>9 - 12</td>
+                        <td>13 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>1 ลงมา</td>
+                        <td>2 - 5</td>
+                        <td>6 - 9</td>
+                        <td>10 - 14</td>
+                        <td>15 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>4 ลงมา</td>
+                        <td>5 - 9</td>
+                        <td>10 - 14</td>
+                        <td>15 - 18</td>
+                        <td>19 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>4 ลงมา</td>
+                        <td>5 - 10</td>
+                        <td>11 - 15</td>
+                        <td>16 - 20</td>
+                        <td>21 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>5 ลงมา</td>
+                        <td>6 - 10</td>
+                        <td>11 - 15</td>
+                        <td>16 - 20</td>
+                        <td>21 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>5 ลงมา</td>
+                        <td>6 - 11</td>
+                        <td>12 - 16</td>
+                        <td>17 - 22</td>
+                        <td>23 ขึ้นไป</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>7 ลงมา</td>
+                        <td>8 - 13</td>
+                        <td>14 - 18</td>
+                        <td>19 - 23</td>
+                        <td>24 ขึ้นไป</td>
+                    </tr>
                 </table>
 
                 <br>
@@ -288,18 +630,54 @@
                     <h3>Target HR Range (เป้าหมายอัตราการเต้นของหัวใจ)</h3>
                     <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;">ข้อมูลสำหรับช่วงอายุ 4-14 ปี</p>
                     <table class="criteria-table">
-                        <tr><th>อายุ (ปี)</th><th>Target HR Range (bpm)</th></tr>
-                        <tr><td>4</td><td>130 - 157</td></tr>
-                        <tr><td>5</td><td>130 - 156</td></tr>
-                        <tr><td>6</td><td>129 - 156</td></tr>
-                        <tr><td>7</td><td>129 - 155</td></tr>
-                        <tr><td>8</td><td>128 - 155</td></tr>
-                        <tr><td>9</td><td>128 - 154</td></tr>
-                        <tr><td>10</td><td>128 - 154</td></tr>
-                        <tr><td>11</td><td>127 - 153</td></tr>
-                        <tr><td>12</td><td>127 - 152</td></tr>
-                        <tr><td>13</td><td>126 - 152</td></tr>
-                        <tr><td>14</td><td>126 - 151</td></tr>
+                        <tr>
+                            <th>อายุ (ปี)</th>
+                            <th>Target HR Range (bpm)</th>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>130 - 157</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>130 - 156</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>129 - 156</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>129 - 155</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>128 - 155</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>128 - 154</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>128 - 154</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>127 - 153</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>127 - 152</td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>126 - 152</td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>126 - 151</td>
+                        </tr>
                     </table>
                 </div>
             </div>
@@ -309,16 +687,23 @@
         <div id="screen-history" class="screen">
             <header class="app-header" style="position: relative; padding-top: 10px;">
                 <button id="btn-back-from-history" class="btn-icon">ย้อนกลับ</button>
-                <h1 style="font-size: 1.8rem; line-height: 1.3; word-break: keep-all;">ข้อมูลหลังบ้าน <br><span style="font-size: 1.3rem;">(ประวัติการคัดกรอง)</span></h1>
+                <h1 style="font-size: 1.8rem; line-height: 1.3; word-break: keep-all;">ข้อมูลหลังบ้าน <br><span
+                        style="font-size: 1.3rem;">(ประวัติการคัดกรอง)</span></h1>
                 <p style="margin-top: 5px;">บันทึกข้อมูลและดึงจากแคชเบราว์เซอร์ (Local Storage)</p>
             </header>
-            
+
             <div class="glass-card" style="padding: 20px; overflow-y: auto; max-height: 68vh;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                    <div id="history-stats" style="font-weight: 600; color: var(--primary); font-size: 1.05rem;">จำนวนข้อมูลคัดกรองทั้งหมด: 0 รายการ</div>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <div id="history-stats" style="font-weight: 600; color: var(--primary); font-size: 1.05rem;">
+                        จำนวนข้อมูลคัดกรองทั้งหมด: 0 รายการ</div>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button id="btn-export-csv" class="btn-primary" type="button" style="background: #10b981; padding: 8px 14px; font-size: 0.9rem; box-shadow: none; margin: 0; width: auto;">📊 ส่งออกไฟล์ CSV (Excel)</button>
-                        <button id="btn-clear-history" class="btn-primary" type="button" style="background: #ef4444; padding: 8px 14px; font-size: 0.9rem; box-shadow: none; margin: 0; width: auto;">🗑️ ล้างข้อมูลทั้งหมด</button>
+                        <button id="btn-export-csv" class="btn-primary" type="button"
+                            style="background: #10b981; padding: 8px 14px; font-size: 0.9rem; box-shadow: none; margin: 0; width: auto;">📊
+                            ส่งออกไฟล์ CSV (Excel)</button>
+                        <button id="btn-clear-history" class="btn-primary" type="button"
+                            style="background: #ef4444; padding: 8px 14px; font-size: 0.9rem; box-shadow: none; margin: 0; width: auto;">🗑️
+                            ล้างข้อมูลทั้งหมด</button>
                     </div>
                 </div>
                 <div style="overflow-x: auto;">
@@ -353,4 +738,5 @@
     <script src="criteria.js?v=14"></script>
     <script src="app.js?v=14"></script>
 </body>
+
 </html>
