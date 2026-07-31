@@ -39,10 +39,20 @@
                     │                                      │
                     │   Frontend (HTML/CSS/JS)              │
                     │   — ใช้แต่ HN ไม่มีชื่อ-สกุล —       │
+                    │   (สร้าง PDF และส่งผ่าน Vercel API)   │
                     └──────────────┬───────────────────────┘
                                    │
-                        POST /api/assessment
-                        (HN + ผลทดสอบ)
+                        ส่ง PDF ผ่าน Telegram API
+                                   │
+                                   ▼
+                            ┌───────────────┐
+                            │ 📱 Telegram   │
+                            │ Bot           │
+                            │ (รับ PDF      │
+                            │  ผลทดสอบ)     │
+                            └───────┬───────┘
+                                   │
+                    ดึง PDF กลับผ่าน API (Polling)
                                    │
                                    ▼
     ┌──────────────────────────────────────────────────────┐
@@ -50,8 +60,8 @@
     │                                                      │
     │   ┌─────────────────┐    ┌─────────────────────┐    │
     │   │  Python Backend  │    │  Database Server    │    │
-    │   │  (FastAPI)       │───▶│  (MySQL/PostgreSQL) │    │
-    │   │  + OCR Service   │    │  เก็บข้อมูลเต็ม     │    │
+    │   │  (OCR Service)   │───▶│  (MySQL/PostgreSQL) │    │
+    │   │  ดึงข้อมูลจาก PDF │    │  เก็บข้อมูลเต็ม     │    │
     │   └────────┬────────┘    └─────────────────────┘    │
     │            │                                         │
     │            │              ┌─────────────────────┐    │
@@ -64,26 +74,16 @@
     │   │  (ดูข้อมูล+ชื่อ) │                               │
     │   └─────────────────┘                               │
     └──────────────────────────────────────────────────────┘
-                    │
-            ส่ง PDF / ดึง PDF กลับ OCR
-                    │
-                    ▼
-            ┌───────────────┐
-            │ 📱 Telegram   │
-            │ Bot           │
-            │ (ส่ง PDF      │
-            │  ผลทดสอบ)     │
-            └───────────────┘
 ```
 
 ### อธิบาย Flow หลัก
 
 1. **เจ้าหน้าที่** เปิด Frontend (Vercel) จาก **มือถือ/PC** นอกสถานที่
 2. กรอก **HN + ผลทดสอบ** (ไม่มีชื่อ-สกุลบนหน้าเว็บ ← PDPA)
-3. กดส่ง → Frontend POST ข้อมูลไป **Python Backend** (Hospital Server)
-4. Backend **บันทึกลง Database** + **สร้าง PDF** + **ส่ง PDF ผ่าน Telegram Bot**
-5. เจ้าหน้าที่ **ได้รับ PDF ใน Telegram** ทันที (ไม่ต้องดาวน์โหลดจากเว็บ)
-6. **Python OCR** คอยดึง PDF จาก Telegram กลับมา → อ่านข้อมูล → เก็บลง Database หลังบ้าน
+3. กดส่ง → Frontend **สร้าง PDF** และ **ส่งไฟล์ PDF ไปเข้า Telegram Bot** โดยตรง (ผ่าน Vercel Serverless Function เพื่อไม่ให้ Token หลุด)
+4. เจ้าหน้าที่ **ได้รับ PDF ใน Telegram** ทันที
+5. **Python Backend** ในเครือข่ายโรงพยาบาล (ทำงานแบบ Background) คอย Polling ดึง PDF จาก Telegram กลับมา
+6. Backend ทำ **OCR อ่านข้อมูลจาก PDF** → แล้วบันทึกลง **Database หลังบ้าน**
 7. **PC โรงพยาบาล** เปิด Admin Dashboard → ดูข้อมูลทั้งหมด + ดึง **ชื่อ-สกุลจาก HN** ผ่านระบบ HIS
 
 ---
@@ -91,38 +91,34 @@
 ## Data Flow (ละเอียด)
 
 ```
-=== Assessment Flow ===
+=== Assessment Flow (Frontend ➡️ Telegram) ===
 
   👨‍⚕️ เจ้าหน้าที่ (มือถือ/PC)
        │
        ▼
-  🌐 Frontend (Vercel) ─── กรอก HN + ทำ test + คำนวณผล
+  🌐 Frontend (Vercel) ─── กรอก HN + ทำ test + คำนวณผล + สร้าง PDF
        │
-       │  POST /api/assessment {hn, age, gender, results}
+       │  POST /api/send-telegram (Vercel Serverless Function)
        ▼
-  🏥 Python Backend (Hospital Server)
-       │
-       ├──▶ 💾 INSERT assessment record → Database
-       │
-       └──▶ 📱 sendDocument(PDF) → Telegram Bot
+  📱 Telegram Bot ──▶ ส่ง PDF เข้า Group/Chat
                  │
                  ▼
             เจ้าหน้าที่ได้รับ PDF ใน Telegram ✅
 
 
-=== OCR Flow (background) ===
+=== OCR Flow (Background ใน รพ.) ===
 
-  🏥 Python Backend
+  🏥 Python Backend (Hospital Server)
        │
-       │  getUpdates() / poll PDF files
+       │  getUpdates() / poll ดึง PDF จาก Telegram (Outbound connection)
        ▼
   📱 Telegram Bot ──▶ ส่ง PDF documents กลับมา
        │
        ▼
   🏥 Python Backend
-       │  OCR อ่าน PDF (PyMuPDF + regex parse)
+       │  OCR อ่าน Text จาก PDF (PyMuPDF + regex parse)
        ▼
-  💾 UPDATE/INSERT ข้อมูลที่ OCR ได้ → Database
+  💾 INSERT ข้อมูลที่ OCR ได้ → Database (ไม่มีข้อมูลชื่อ-สกุล)
 
 
 === Admin Flow (PC รพ. เท่านั้น) ===
@@ -180,12 +176,16 @@
 - ยืนยัน PDPA — ไม่มี field ชื่อ-สกุล ✅
 
 #### [MODIFY] app.js
-- เพิ่ม `sendToBackend()` — POST assessment data ไป Python Backend
-- ปรับ `generateVectorPDF()` ให้ return PDF blob (เพื่อส่งผ่าน API ได้ด้วย)
-- เพิ่ม config `BACKEND_API_URL` (ชี้ไป Hospital Server)
+- เพิ่ม `sendToTelegram()` — POST ข้อมูล (หรือ PDF Blob) ไปยัง Vercel API
+- ปรับ `generateVectorPDF()` ให้ return PDF blob (เพื่อส่งให้ Vercel API)
+
+#### [NEW] api/send-telegram.js (Vercel Serverless Function)
+- รับ PDF Blob จาก Frontend
+- อ่าน `TELEGRAM_BOT_TOKEN` จาก Environment Variables (ปลอดภัย ไม่เผยแพร่หน้าเว็บ)
+- ยิง API ของ Telegram (`sendDocument`) เพื่อส่ง PDF เข้ากลุ่ม
 
 #### [NEW] vercel.json
-- Static site deployment config
+- Vercel deployment config
 
 ---
 
@@ -193,15 +193,15 @@
 
 #### [NEW] backend/main.py — FastAPI Server
 **Endpoints:**
-- `POST /api/assessment` — รับข้อมูลจาก Frontend → บันทึก DB → สร้าง PDF → ส่ง Telegram
 - `GET /api/records` — ดึงข้อมูลหลังบ้าน (เฉพาะ Hospital Network)
-- `POST /api/ocr-import` — trigger OCR จาก PDF ใน Telegram → เก็บลง DB
+- `POST /api/manual-ocr-import` — (Optional) สำหรับกด Trigger ดึงข้อมูล OCR แบบ Manual
 - `GET /api/export-csv` — export CSV
 
-#### [NEW] backend/telegram_bot.py — Telegram Integration
-- ส่ง PDF document ไปยัง chat/group ที่กำหนด
-- Poll ดึง PDF ใหม่จาก Telegram เข้ามา OCR
-- (รอตัดสินใจ: ส่งเข้ากลุ่ม Staff หรือ 1 บัญชีเจ้าหน้าที่)
+#### [NEW] backend/telegram_bot.py — Telegram Polling Service
+- รันเป็น Background Service (Polling)
+- ดึง PDF ใหม่จาก Telegram (`getUpdates`) เข้ามาทำ OCR
+- เมื่อทำ OCR สำเร็จ ให้บันทึกข้อมูลลง Database
+- ไม่ต้องส่งไฟล์แล้ว (เพราะ Frontend ส่งไปแล้ว) แค่คอย "รับ" อย่างเดียว
 
 #### [NEW] backend/ocr_service.py — PDF OCR
 - **PyMuPDF (fitz)** อ่าน text จาก PDF ที่ระบบสร้างเอง (text-based → ไม่ต้อง Tesseract)
@@ -275,7 +275,7 @@ HeightGrowthApp/
 | 1 | Telegram ส่งเข้ากลุ่ม Staff หรือ 1 บัญชี? | ⏳ |
 | 2 | Database Server ของ รพ. เป็น MySQL / PostgreSQL / อื่น? | ⏳ |
 | 3 | ระบบ HIS มี API สำหรับ lookup ชื่อจาก HN หรือไม่? (ถ้าไม่มี → manual import) | ⏳ |
-| 4 | Hospital Server สามารถรับ request จาก Vercel (public internet) ได้หรือไม่? (ต้อง open port / reverse proxy) | ⏳ |
+| 4 | Hospital Server ออกอินเทอร์เน็ตเพื่อดึงข้อมูลจาก Telegram API ได้หรือไม่? (ปกติ Firewall รพ. จะอนุญาต Outbound) | ✅ แก้ปัญหาเจาะ Inbound Port ได้แล้ว |
 
 ---
 
