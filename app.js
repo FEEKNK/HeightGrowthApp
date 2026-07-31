@@ -76,6 +76,8 @@ onboardingForm.addEventListener('submit', (e) => {
     const height = parseFloat(document.getElementById('height').value);
     const hr = document.getElementById('hr').value || '-';
     const bp = document.getElementById('bp').value || '-';
+    const companySel = document.getElementById('company-select').value;
+    const company = companySel === 'other' ? document.getElementById('company-other').value : companySel;
     
     const bmi = calculateBMI(weight, height);
     
@@ -88,7 +90,7 @@ onboardingForm.addEventListener('submit', (e) => {
         alert('ระบบนี้ถูกออกแบบมาสำหรับเด็กอายุระหว่าง 4 - 14 ปี เท่านั้นครับ');
         return;
     }
-    currentUser = { hn, name, gender, age, weight, height, bmi, group, hr, bp };
+    currentUser = { hn, company, name, gender, age, weight, height, bmi, group, hr, bp };
     
     setupDashboard();
     switchScreen(screenDashboard);
@@ -193,6 +195,7 @@ function renderBDMSReport(user, results) {
             <div class="bdms-info-box">
                 <div class="bdms-info-grid">
                     <div class="bdms-info-row"><span class="bdms-info-label">HN:</span> <span class="bdms-info-val">${user.hn}</span></div>
+                    <div class="bdms-info-row"><span class="bdms-info-label">บริษัท / Company:</span> <span class="bdms-info-val">${user.company || '-'}</span></div>
                     <div class="bdms-info-row"><span class="bdms-info-label">อายุ / Age:</span> <span class="bdms-info-val">${user.age} ปี / years</span></div>
                     <div class="bdms-info-row"><span class="bdms-info-label">เพศ / Gender:</span> <span class="bdms-info-val">${genderText}</span></div>
                     <div class="bdms-info-row"><span class="bdms-info-label">วันที่ทดสอบ / Test Date:</span> <span class="bdms-info-val">${testDate}</span></div>
@@ -424,39 +427,36 @@ function generateVectorPDF() {
     doc.setTextColor(100, 116, 139); doc.text('HN:', marginX + 6, infoY1);
     doc.setTextColor(15, 23, 42); doc.text(`${currentUser.hn}`, marginX + 15, infoY1);
 
-    doc.setTextColor(100, 116, 139); doc.text('เพศ / Gender:', marginX + 66, infoY1);
-    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.gender === 'male' ? 'ชาย / Male' : 'หญิง / Female'}`, marginX + 90, infoY1);
+    doc.setTextColor(100, 116, 139); doc.text('อายุ / Age:', marginX + 66, infoY1);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.age} ปี / years`, marginX + 85, infoY1);
 
-    doc.setTextColor(100, 116, 139); doc.text('อายุ / Age:', marginX + 130, infoY1);
-    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.age} ปี / years`, marginX + 147, infoY1);
+    doc.setTextColor(100, 116, 139); doc.text('เพศ / Gender:', marginX + 130, infoY1);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.gender === 'male' ? 'ชาย / Male' : 'หญิง / Female'}`, marginX + 154, infoY1);
 
     // Row 2
     const infoY2 = 64.5;
-    doc.setTextColor(100, 116, 139); doc.text('น้ำหนัก / Weight:', marginX + 6, infoY2);
-    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.weight} กก. / kg`, marginX + 34, infoY2);
+    doc.setTextColor(100, 116, 139); doc.text('บริษัท / Company:', marginX + 6, infoY2);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.company || '-'}`, marginX + 32, infoY2);
 
-    doc.setTextColor(100, 116, 139); doc.text('ส่วนสูง / Height:', marginX + 66, infoY2);
-    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.height} ซม. / cm`, marginX + 94, infoY2);
+    doc.setTextColor(100, 116, 139); doc.text('น้ำหนัก / Weight:', marginX + 66, infoY2);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.weight} กก. / kg`, marginX + 94, infoY2);
 
-    doc.setTextColor(100, 116, 139); doc.text('วันที่ทดสอบ / Test Date:', marginX + 130, infoY2);
-    doc.setTextColor(15, 23, 42); doc.text(`${testDate}`, marginX + 164, infoY2);
+    doc.setTextColor(100, 116, 139); doc.text('ส่วนสูง / Height:', marginX + 130, infoY2);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.height} ซม. / cm`, marginX + 158, infoY2);
 
-    // Row 3 (Target HR, HR, BP)
-    const targetData = targetHRTable[currentUser.age] || { min: '-', max: '-' };
-    const targetMin = targetData.min;
-    const targetMax = targetData.max;
+    // Row 3
     const infoY3 = 71.5;
-    doc.setTextColor(79, 70, 229); // #4f46e5 (Indigo)
-    doc.text('Target HR:', marginX + 6, infoY3);
+    doc.setTextColor(100, 116, 139); doc.text('วันที่ทดสอบ / Test Date:', marginX + 6, infoY3);
+    doc.setTextColor(15, 23, 42); doc.text(`${testDate}`, marginX + 42, infoY3);
+
+    const targetData = targetHRTable[currentUser.age] || { min: '-', max: '-' };
+    doc.setTextColor(79, 70, 229); doc.text('Target HR:', marginX + 66, infoY3);
     doc.setFont('Kanit', 'bold');
-    doc.text(`${targetMin} - ${targetMax} bpm`, marginX + 24, infoY3);
+    doc.text(`${targetData.min} - ${targetData.max} bpm`, marginX + 84, infoY3);
     doc.setFont('Kanit', 'normal');
 
-    doc.setTextColor(100, 116, 139); doc.text('HR:', marginX + 66, infoY3);
-    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.hr || '-'} bpm`, marginX + 74, infoY3);
-
-    doc.setTextColor(100, 116, 139); doc.text('BP:', marginX + 130, infoY3);
-    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.bp || '-'} mmHg`, marginX + 138, infoY3);
+    doc.setTextColor(100, 116, 139); doc.text('HR/BP:', marginX + 130, infoY3);
+    doc.setTextColor(15, 23, 42); doc.text(`${currentUser.hr || '-'} / ${currentUser.bp || '-'}`, marginX + 145, infoY3);
 
     // 3. Test Results Title & Table
     doc.setFontSize(10.5);
@@ -814,6 +814,7 @@ function renderHistoryTable() {
         <tr style="border-bottom: 1px solid #e2e8f0;">
             <td style="padding: 10px; font-size: 0.9rem;">${rec.dateStr || '-'}</td>
             <td style="padding: 10px; font-weight: 600; color: var(--primary);">${rec.user?.hn || '-'}</td>
+            <td style="padding: 10px;">${rec.user?.company || '-'}</td>
             <td style="padding: 10px;">${rec.user?.name || '-'}</td>
             <td style="padding: 10px; text-align: center;">${rec.user?.age} ปี / ${rec.user?.gender === 'male' ? 'ชาย' : 'หญิง'}</td>
             <td style="padding: 10px; text-align: center;"><span style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">กลุ่ม ${rec.user?.group || '-'}</span></td>
@@ -861,11 +862,11 @@ btnExportCsv?.addEventListener('click', () => {
         return;
     }
 
-    let csv = "\uFEFF" + "ลำดับ,วันเวลาที่บันทึก,HN,ชื่อ-นามสกุล,เพศ,อายุ (ปี),กลุ่ม,น้ำหนัก (กก.),ส่วนสูง (ซม.),BMI\n";
+    let csv = "\uFEFF" + "ลำดับ,วันเวลาที่บันทึก,HN,บริษัท,ชื่อ-นามสกุล,เพศ,อายุ (ปี),กลุ่ม,น้ำหนัก (กก.),ส่วนสูง (ซม.),BMI\n";
     records.forEach((r, idx) => {
         const u = r.user || {};
         const genderText = u.gender === 'male' ? 'ชาย' : 'หญิง';
-        csv += `"${idx + 1}","${r.dateStr || ''}","${u.hn || ''}","${u.name || ''}","${genderText}","${u.age || ''}","กลุ่มที่ ${u.group || ''}","${u.weight || ''}","${u.height || ''}","${u.bmi || '-'}"\n`;
+        csv += `"${idx + 1}","${r.dateStr || ''}","${u.hn || ''}","${u.company || ''}","${u.name || ''}","${genderText}","${u.age || ''}","กลุ่มที่ ${u.group || ''}","${u.weight || ''}","${u.height || ''}","${u.bmi || '-'}"\n`;
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

@@ -160,7 +160,8 @@ label {
 
 input[type="text"],
 input[type="number"],
-input[type="date"] {
+input[type="date"],
+select {
     width: 100%;
     padding: 12px 15px;
     border: 2px solid transparent;
@@ -172,7 +173,8 @@ input[type="date"] {
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 
-input:focus {
+input:focus,
+select:focus {
     border-color: var(--secondary);
     background: #fff;
     box-shadow: 0 0 0 4px rgba(78, 205, 196, 0.2);

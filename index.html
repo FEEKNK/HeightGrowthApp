@@ -33,6 +33,14 @@
                     <input type="text" id="hn" placeholder="ระบุ HN (เช่น 45-67-6)" required>
                 </div>
                 <div class="form-group">
+                    <label for="company-select">บริษัท / Company</label>
+                    <select id="company-select" required onchange="document.getElementById('company-other').style.display = this.value === 'other' ? 'block' : 'none'; if(this.value === 'other') document.getElementById('company-other').setAttribute('required', 'true'); else document.getElementById('company-other').removeAttribute('required');">
+                        <option value="รพ.กรุงเทพสิริโรจน์">รพ.กรุงเทพสิริโรจน์</option>
+                        <option value="other">อื่นๆ (โปรดระบุ)</option>
+                    </select>
+                    <input type="text" id="company-other" placeholder="ระบุชื่อบริษัท" style="display: none; margin-top: 10px;">
+                </div>
+                <div class="form-group">
                     <label for="child-name">ชื่อ-นามสกุล</label>
                     <input type="text" id="child-name" placeholder="ระบุชื่อ-นามสกุล" pattern="^[a-zA-Zก-๙. ]+$" title="กรุณากรอกเฉพาะตัวอักษรเท่านั้น" oninput="this.value = this.value.replace(/[^a-zA-Zก-๙. ]/g, '')" required>
                 </div>
@@ -300,6 +308,7 @@
                             <tr>
                                 <th style="text-align: left;">วัน-เวลาที่บันทึก</th>
                                 <th style="text-align: left;">HN</th>
+                                <th style="text-align: left;">บริษัท</th>
                                 <th style="text-align: left;">ชื่อ-นามสกุล</th>
                                 <th style="text-align: center;">อายุ / เพศ</th>
                                 <th style="text-align: center;">กลุ่ม</th>
