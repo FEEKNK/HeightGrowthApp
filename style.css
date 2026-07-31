@@ -114,6 +114,13 @@ body {
 .app-header {
     text-align: center;
     margin-bottom: 30px;
+    padding: 0 60px;
+}
+
+@media (min-width: 768px) {
+    .app-header {
+        padding: 0 100px;
+    }
 }
 
 .app-header h1 {
